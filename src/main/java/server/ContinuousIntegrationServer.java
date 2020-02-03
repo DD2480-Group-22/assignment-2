@@ -2,7 +2,6 @@ package server;
 
 import ci.ProjectTester;
 import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
@@ -16,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 public class ContinuousIntegrationServer extends AbstractHandler {
-    private static final Logger logger = Logger.getLogger(ContinuousIntegrationServer.class);
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ContinuousIntegrationServer.class);
 
     public static void main(String[] args) throws Exception {
         Helpers.setUpConfiguration(args);
