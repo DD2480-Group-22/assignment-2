@@ -14,6 +14,7 @@ public class ProjectTester {
     private final String cloneURL;
     private boolean cloned = false;
     private boolean tested = false;
+    private boolean reportSaved = false;
     private boolean cleanedUp = false;
 
     /**
@@ -55,6 +56,7 @@ public class ProjectTester {
 
         GitRepositoryHandler gitRepositoryHandler = new GitRepositoryHandler(id, repositoryName, cloneURL);
         MavenRunner mavenRunner = new MavenRunner(id, repositoryName);
+        AWSFileUploader awsFileUploader = new AWSFileUploader();
 
         for (int i = 0; i < 3 && !cloned; i++) {
             cloned = gitRepositoryHandler.cloneRepository();
@@ -62,6 +64,10 @@ public class ProjectTester {
 
         for (int i = 0; i < 3 && cloned && !tested; i++) {
             tested = mavenRunner.runProject();
+        }
+
+        for (int i = 0; i < 3 && !reportSaved; i++) {
+            reportSaved = awsFileUploader.uploadFile(id);
         }
     }
 }
