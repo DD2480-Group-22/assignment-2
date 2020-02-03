@@ -1,0 +1,21 @@
+dist: trusty
+language: java
+jdk:
+  - oraclejdk8
+script:
+  - mvn clean install
+  - mvn cobertura:cobertura
+notifications:
+  email: false
+  slack:
+    secure: dY2I8hNLXO5k8TILtAFbxXFVBeR8ZYHMk04xfVh7fjq8rc3CGlPNYoXQnXDhZmbsoCxZwx2yYQcvsFLnKmnfOh2MGAPiFMrHVnm7uVnYcV/l5/ibW2Az2mZMKnDuLwtwOo0VhNHtGR+PWFQ7kB/Pfi/COmC2rp/oqgfXC4RzDFE2A4CRHZtpL/mjMQzDRNMb8oRvePWRs58x2QDjcRKbtlvqWoX06/tIUaJuA5KFVa0A1AoPic0DKBji7xA2Hxx/wjx9a02Sk8jgXWA16DXNh2gh8m4b34D3mnsHqisuw+evlWDbACp4JEMaveEccWyaai2Va0ccxEyZzI4DM9SNIN+YZotRvxAV/Fw/+n0PLCyPBFf/EPp1UPUQxL6Ap6XyZITHDmPRJVtiBK84tHQPKbMYS+kdhuSKJME0oOAfHo8ePGpD+6z3Fxf8EWjvwXPgn6dOBPdx25NWdrl6CjA/1MLcr3eDrDEavqA2dSaKrrx9DanLKwlUa+QCZ3vgnCVjF8dnf9wsp3uzehrv5O1QW19aKyvw2kaDUUauCIn+ipsATtberB8hfrI0RjGZGZCymbwBiZzCVj2J8FWQRxpVT9WhJyvGYLphHGt8edj/JvvMB6Pws5FQa2+q04OgT+5cbr7KS0OPhQDKp9a/dFXtsslV+acfH/DSKnpbRyiLijs=
+
+    on_success: always
+    on_failure: always
+
+    template:
+      - "Repo `%{repository_slug}` *%{result}* build (<%{build_url}|#%{build_number}>) for commit (<%{compare_url}|%{commit}>) on branch `%{branch}` by `%{author}`."
+      - "Execution time: *%{duration}*"
+      - "Message: %{message}"
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
