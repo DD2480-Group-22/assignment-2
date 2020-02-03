@@ -54,9 +54,14 @@ public class ProjectTester {
         logger.info("Started test of repository: " + repositoryName + ", branch: " + branch + ", pushed by: " + author + ", id: " + id);
 
         GitRepositoryHandler gitRepositoryHandler = new GitRepositoryHandler(id, repositoryName, cloneURL);
+        MavenRunner mavenRunner = new MavenRunner(id, repositoryName);
 
         for (int i = 0; i < 3 && !cloned; i++) {
             cloned = gitRepositoryHandler.cloneRepository();
+        }
+
+        for (int i = 0; i < 3 && cloned && !tested; i++) {
+            tested = mavenRunner.runProject();
         }
     }
 }
