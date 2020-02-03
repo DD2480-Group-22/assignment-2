@@ -1,5 +1,6 @@
 package server;
 
+import ci.ProjectTester;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.server.Request;
@@ -33,6 +34,8 @@ public class ContinuousIntegrationServer extends AbstractHandler {
             String payload = IOUtils.toString(request.getReader());
             try {
                 JSONObject jsonObject = new JSONObject(payload);
+                ProjectTester projectTester = new ProjectTester(jsonObject);
+                projectTester.processPush();
             } catch (JSONException e) {
                 logger.error("Server failed while parsing received payload", e);
             }
