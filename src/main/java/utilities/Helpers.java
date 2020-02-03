@@ -4,6 +4,9 @@ import ci.AWSFileUploader;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.MissingResourceException;
@@ -111,5 +114,14 @@ public class Helpers {
      */
     public static void updatePreviousBuilds(final String newReport) {
         Configuration.PREVIOUS_BUILDS.add(newReport);
+    }
+    
+    
+    public static void txtToHTMLFile(File textFile) throws FileNotFoundException {
+    	Scanner textScanner = new Scanner(textFile);
+    	
+    	while(textScanner.hasNextLine()) {
+    		
+    	}
     }
 }
