@@ -22,11 +22,17 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
+# Intellij
 .idea
 assignment-2.iml
-target
 
 #Eclipse auto-generated files
 .classpath
 .project
 *.prefs
+
+# Project specific
+target
+git
+reports
+log

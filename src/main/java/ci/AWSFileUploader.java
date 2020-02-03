@@ -12,7 +12,6 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import org.apache.log4j.Logger;
 import utilities.Configuration;
 import utilities.Helpers;
 
@@ -21,7 +20,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class AWSFileUploader {
-    private static final Logger logger = Logger.getLogger(AWSFileUploader.class);
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(AWSFileUploader.class);
     private final AmazonS3 s3Client;
 
     /**
@@ -59,7 +58,7 @@ public class AWSFileUploader {
             request.setMetadata(metadata);
             s3Client.putObject(request);
             Helpers.updatePreviousBuilds(fileName);
-            logger.info("Uploaded file: " + fileName + " to S3 bucket: " + Configuration.BUCKET_NAME);
+            logger.info("Uploaded file: {} to S3 bucket: {} ", fileName, Configuration.BUCKET_NAME);
             return true;
         } catch (AmazonServiceException e) {
             logger.error("Amazon S3 failed to process the file: " + fileName, e);

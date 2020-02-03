@@ -1,7 +1,5 @@
 package ci;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.maven.shared.invoker.*;
 import utilities.Configuration;
 
@@ -12,7 +10,7 @@ import java.io.PrintStream;
 import java.util.Collections;
 
 public class MavenRunner {
-    private static final Logger logger = LogManager.getLogger(MavenRunner.class);
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MavenRunner.class);
     private final String projectId;
     private final String repositoryName;
 

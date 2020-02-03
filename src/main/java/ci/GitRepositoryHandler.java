@@ -1,7 +1,5 @@
 package ci;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -13,7 +11,7 @@ import utilities.Configuration;
 import java.io.File;
 
 public class GitRepositoryHandler {
-    private static final Logger logger = LogManager.getLogger(GitRepositoryHandler.class);
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(GitRepositoryHandler.class);
     private final String id;
     private final String repositoryName;
     private final String cloneURL;

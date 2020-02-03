@@ -1,12 +1,10 @@
 package ci;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import utilities.Helpers;
 
 public class ProjectTester {
-    private static final Logger logger = LogManager.getLogger(ProjectTester.class);
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ProjectTester.class);
 
     private final String branch;
     private final String author;
@@ -29,7 +27,7 @@ public class ProjectTester {
         author = Helpers.getAuthor(jsonObject);
         repositoryName = Helpers.getRepositoryName(jsonObject);
         cloneURL = Helpers.getCloneURL(jsonObject);
-        logger.info("Started test of repository: " + repositoryName + ", branch: " + branch + ", pushed by: " + author + ", id: " + Helpers.getHeadCommitId(jsonObject));
+        logger.info("Started test of repository: {}, branch: {}, pushed by: {}, id: {}", repositoryName, branch, author, Helpers.getHeadCommitId(jsonObject));
     }
 
     /**
@@ -53,7 +51,7 @@ public class ProjectTester {
      * Processes a POST request from Github.
      */
     public void processPush() {
-        logger.info("Started test of repository: " + repositoryName + ", branch: " + branch + ", pushed by: " + author + ", id: " + id);
+        logger.info("Started test of repository: {}, branch: {}, pushed by: {}, id: {}", repositoryName, branch, author, id);
 
         GitRepositoryHandler gitRepositoryHandler = new GitRepositoryHandler(id, repositoryName, cloneURL);
         MavenRunner mavenRunner = new MavenRunner(id, repositoryName);
