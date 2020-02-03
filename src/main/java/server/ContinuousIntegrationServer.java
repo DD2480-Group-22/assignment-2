@@ -18,7 +18,7 @@ import java.io.IOException;
 public class ContinuousIntegrationServer extends AbstractHandler {
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ContinuousIntegrationServer.class);
 
-    public static void main(String[] args) throws Exception {
+    public void runServer(String[] args) throws Exception {
         Helpers.setUpConfiguration(args);
         Server server = new Server(Configuration.SERVER_PORT);
         server.setHandler(new ContinuousIntegrationServer());
