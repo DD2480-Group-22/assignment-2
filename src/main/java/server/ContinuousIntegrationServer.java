@@ -8,6 +8,7 @@ import org.eclipse.jetty.server.handler.AbstractHandler;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
+import utilities.Configuration;
 import utilities.Helpers;
 
 import javax.servlet.http.HttpServletRequest;
@@ -19,7 +20,7 @@ public class ContinuousIntegrationServer extends AbstractHandler {
 
     public static void main(String[] args) throws Exception {
         Helpers.setUpConfiguration(args);
-        Server server = new Server(8080);
+        Server server = new Server(Configuration.SERVER_PORT);
         server.setHandler(new ContinuousIntegrationServer());
         server.start();
         server.join();

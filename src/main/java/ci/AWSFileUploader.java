@@ -30,12 +30,11 @@ public class AWSFileUploader {
     public AWSFileUploader() {
         AWSCredentials credentials = new BasicAWSCredentials(Configuration.AWS_ACCESS_KEY_ID, Configuration.AWS_SECRET_KEY);
 
-        Regions clientRegion = Regions.EU_NORTH_1;
+        Regions clientRegion = Regions.fromName(Configuration.S3_BUCKET_REGION);
         s3Client = AmazonS3ClientBuilder.standard()
                 .withCredentials(new AWSStaticCredentialsProvider(credentials))
                 .withRegion(clientRegion).build();
     }
-
 
     /**
      * Uploads the file specified by {@code fileName} to an AWS bucket.
