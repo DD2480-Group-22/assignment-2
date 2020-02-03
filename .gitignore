@@ -25,3 +25,8 @@ hs_err_pid*
 .idea
 assignment-2.iml
 target
+
+#Eclipse auto-generated files
+.classpath
+.project
+*.prefs
