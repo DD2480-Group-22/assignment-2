@@ -1,11 +1,12 @@
 package ci;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.json.JSONObject;
 import utilities.Helpers;
 
 public class ProjectTester {
-    private static final Logger logger = Logger.getLogger(ProjectTester.class);
+    private static final Logger logger = LogManager.getLogger(ProjectTester.class);
 
     private final String branch;
     private final String author;
