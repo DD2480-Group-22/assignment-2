@@ -151,15 +151,23 @@ public class Helpers {
     			
     		if(htmlLine.contains("[tr]"))
     			htmlLine = htmlLine.replace("[tr]", ""+testsRun);
-    			
     		if(htmlLine.contains("[fl]"))
     			htmlLine = htmlLine.replace("[fl]", ""+failures);
-    			
     		if(htmlLine.contains("[er]"))
     			htmlLine = htmlLine.replace("[er]", ""+errors);
-    		
     		if(htmlLine.contains("[sk]"))
     			htmlLine = htmlLine.replace("[sk]", ""+skipped);
+    		
+    		int height = 100 / testsRun;
+    		
+    		if(htmlLine.contains("[trHeight]"))
+    			htmlLine = htmlLine.replace("[trHeight]", ""+testsRun*height);
+    		if(htmlLine.contains("[flHeight]"))
+    			htmlLine = htmlLine.replace("[flHeight]", ""+failures*height);
+    		if(htmlLine.contains("[erHeight]"))
+    			htmlLine = htmlLine.replace("[erHeight]", ""+errors*height);
+    		if(htmlLine.contains("[skHeight]"))
+    			htmlLine = htmlLine.replace("[skHeight]", ""+skipped*height);
     			
     			
     		htmlWriter.write(htmlLine);
