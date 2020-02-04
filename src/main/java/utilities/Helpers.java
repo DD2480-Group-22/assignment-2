@@ -122,26 +122,50 @@ public class Helpers {
     public static void txtToHTMLFile(File textFile) throws IOException {
     	Scanner textScanner = new Scanner(textFile);
     	
+    	int testsRun = 0;
+		int failures = 0;
+		int errors   = 0;
+		int skipped  = 0;
+    	
     	while(textScanner.hasNextLine()) {
-    		String line = textScanner.nextLine().substring(7);
+    		String textLine = textScanner.nextLine().substring(7);
     		
-    		int testsRun = 0;
-    		int failures = 0;
-    		int errors   = 0;
-    		int skipped  = 0;
-    		
-    		if(line.contains("Tests run")) {
-    			String[] numbers = line.split(",");
+    		if(textLine.contains("Tests run")) {
+    			String[] numbers = textLine.split(",");
     			testsRun += Integer.parseInt( numbers[0].split(":")[1].substring(1) );
     			failures += Integer.parseInt( numbers[1].split(":")[1].substring(1) );
     			errors   += Integer.parseInt( numbers[2].split(":")[1].substring(1) );
     			skipped  += Integer.parseInt( numbers[3].split(":")[1].substring(1) );
     			
     		}
-    		
-    		FileWriter htmlWriter = new FileWriter("results.html");
-    		
-    		htmlWriter.close();
     	}
+    	textScanner.close();
+    	
+    		
+    	// Read from the html template and write to new html file with placeholder values replaced
+    	Scanner htmlScanner = new Scanner(new File("template.html"));
+    	FileWriter htmlWriter = new FileWriter("results.html");
+    		
+    	while(htmlScanner.hasNextLine()) {
+    		String htmlLine = htmlScanner.nextLine();
+    			
+    		if(htmlLine.contains("[tr]"))
+    			htmlLine = htmlLine.replace("[tr]", ""+testsRun);
+    			
+    		if(htmlLine.contains("[fl]"))
+    			htmlLine = htmlLine.replace("[fl]", ""+failures);
+    			
+    		if(htmlLine.contains("[er]"))
+    			htmlLine = htmlLine.replace("[er]", ""+errors);
+    		
+    		if(htmlLine.contains("[sk]"))
+    			htmlLine = htmlLine.replace("[sk]", ""+skipped);
+    			
+    			
+    		htmlWriter.write(htmlLine);
+    	}
+    		
+    	htmlScanner.close();
+    	htmlWriter.close();
     }
 }
