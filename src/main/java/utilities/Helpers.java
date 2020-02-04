@@ -5,8 +5,10 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.MissingResourceException;
@@ -117,11 +119,29 @@ public class Helpers {
     }
     
     
-    public static void txtToHTMLFile(File textFile) throws FileNotFoundException {
+    public static void txtToHTMLFile(File textFile) throws IOException {
     	Scanner textScanner = new Scanner(textFile);
     	
     	while(textScanner.hasNextLine()) {
+    		String line = textScanner.nextLine().substring(7);
     		
+    		int testsRun = 0;
+    		int failures = 0;
+    		int errors   = 0;
+    		int skipped  = 0;
+    		
+    		if(line.contains("Tests run")) {
+    			String[] numbers = line.split(",");
+    			testsRun += Integer.parseInt( numbers[0].split(":")[1].substring(1) );
+    			failures += Integer.parseInt( numbers[1].split(":")[1].substring(1) );
+    			errors   += Integer.parseInt( numbers[2].split(":")[1].substring(1) );
+    			skipped  += Integer.parseInt( numbers[3].split(":")[1].substring(1) );
+    			
+    		}
+    		
+    		FileWriter htmlWriter = new FileWriter("results.html");
+    		
+    		htmlWriter.close();
     	}
     }
 }
