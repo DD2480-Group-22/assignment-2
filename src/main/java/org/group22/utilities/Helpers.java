@@ -1,6 +1,6 @@
-package utilities;
+package org.group22.utilities;
 
-import ci.AWSFileUploader;
+import org.group22.ci.AWSFileUploader;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -76,7 +76,7 @@ public class Helpers {
     }
 
     /**
-     * Handles the setup of the CI server and checks that all necessary values are set
+     * Handles the setup of the CI org.groupp22.server and checks that all necessary values are set
      *
      * @param args command line arguments
      */

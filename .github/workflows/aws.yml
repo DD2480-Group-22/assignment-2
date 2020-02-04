@@ -78,13 +78,13 @@ jobs:
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: ecs-task-definition.json
-          container-name: ci-server
+          container-name: org.groupp22.ci-org.groupp22.server
           image: ${{ steps.build-image.outputs.image }}
 
       - name: Deploy Amazon ECS task definition
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: ci-server-service
+          service: org.groupp22.ci-org.groupp22.server-service
           cluster: default
           wait-for-service-stability: true

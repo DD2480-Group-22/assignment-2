@@ -1,8 +1,8 @@
 version: '3.4'
 services:
   ci-server:
-    image: ci-server:latest
-    container_name: ci-server
+    image: org.groupp22.ci-org.groupp22.server:latest
+    container_name: org.groupp22.ci-org.groupp22.server
     ports:
       - 7070:8080
     environment:

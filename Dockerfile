@@ -27,10 +27,10 @@ RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/ap
   rm apache-maven-$MAVEN_VERSION-bin.tar.gz && \
   mv apache-maven-$MAVEN_VERSION /usr/lib/mvn
 
-COPY --from=builder /usr/src/app/target/ci-server-jar-with-dependencies.jar /usr/app/ci-server.jar
+COPY --from=builder /usr/src/app/target/org.ci-org.group22.server-jar-with-dependencies.jar /usr/app/
 
 WORKDIR /usr/app
 
 RUN mkdir -p /usr/app/reports
 
-CMD java -jar ci-server.jar dd2480-assignment-2 eu-north-1 8080
+CMD java -jar org.ci-org.group22.server-jar-with-dependencies.jar dd2480-assignment-2 eu-north-1 8080

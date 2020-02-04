@@ -1,15 +1,15 @@
-package server;
+package org.group22.server;
 
-import ci.ProjectTester;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.group22.ci.ProjectTester;
+import org.group22.utilities.Configuration;
+import org.group22.utilities.Helpers;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
-import utilities.Configuration;
-import utilities.Helpers;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
