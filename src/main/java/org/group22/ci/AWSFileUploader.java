@@ -1,4 +1,4 @@
-package ci;
+package org.group22.ci;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
@@ -12,8 +12,8 @@ import com.amazonaws.services.s3.model.ObjectListing;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3ObjectSummary;
-import utilities.Configuration;
-import utilities.Helpers;
+import org.group22.utilities.Configuration;
+import org.group22.utilities.Helpers;
 
 import java.io.File;
 import java.util.HashSet;
