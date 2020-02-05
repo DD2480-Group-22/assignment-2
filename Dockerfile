@@ -1,15 +1,3 @@
-FROM maven:3-jdk-8 AS builder
-
-RUN mkdir -p /usr/src/app
-
-WORKDIR /usr/src/app
-
-COPY pom.xml /usr/src/app
-
-COPY src /usr/src/app
-
-RUN mvn clean package
-
 FROM openjdk:8-jdk-alpine AS runner
 
 RUN apk add --update ca-certificates && rm -rf /var/cache/apk/* && \
@@ -27,10 +15,10 @@ RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/ap
   rm apache-maven-$MAVEN_VERSION-bin.tar.gz && \
   mv apache-maven-$MAVEN_VERSION /usr/lib/mvn
 
-COPY --from=builder /usr/src/app/target/org.ci-org.group22.server-jar-with-dependencies.jar /usr/app/
+COPY target/org.ci-org.group22.server-jar-with-dependencies.jar /usr/app/
 
 WORKDIR /usr/app
 
 RUN mkdir -p /usr/app/reports
 
-CMD java -jar org.ci-org.group22.server-jar-with-dependencies.jar dd2480-assignment-2 eu-north-1 8080
+CMD java -jar org.ci-org.group22.server-jar-with-dependencies.jar dd2480-assignment-2 eu-north-1
