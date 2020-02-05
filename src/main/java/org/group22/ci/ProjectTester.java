@@ -1,7 +1,7 @@
-package ci;
+package org.group22.ci;
 
+import org.group22.utilities.Helpers;
 import org.json.JSONObject;
-import utilities.Helpers;
 
 public class ProjectTester {
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ProjectTester.class);

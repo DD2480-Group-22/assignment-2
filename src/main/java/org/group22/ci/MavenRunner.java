@@ -1,7 +1,7 @@
-package ci;
+package org.group22.ci;
 
 import org.apache.maven.shared.invoker.*;
-import utilities.Configuration;
+import org.group22.utilities.Configuration;
 
 import java.io.File;
 import java.io.FileNotFoundException;

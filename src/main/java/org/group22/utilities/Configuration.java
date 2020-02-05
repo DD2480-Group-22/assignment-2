@@ -1,4 +1,4 @@
-package utilities;
+package org.group22.utilities;
 
 import java.util.Set;
 
@@ -8,7 +8,7 @@ public class Configuration {
     public static String S3_BUCKET_REGION;
     public static String BUCKET_NAME;
     public static Set<String> PREVIOUS_BUILDS;
-    public static int SERVER_PORT;
+    public static final int SERVER_PORT = System.getenv("PORT") == null ? 8080 : Integer.parseInt(System.getenv("PORT"));
     public static final String GITHUB_TOKEN = System.getenv("GITHUB_TOKEN");
     public static final String M3_HOME = System.getenv("MAVEN_HOME");
     public static final String PATH_TO_RESOURCES = "./";

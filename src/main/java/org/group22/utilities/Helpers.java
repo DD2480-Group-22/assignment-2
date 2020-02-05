@@ -1,6 +1,6 @@
-package utilities;
+package org.group22.utilities;
 
-import ci.AWSFileUploader;
+import org.group22.ci.AWSFileUploader;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -76,15 +76,14 @@ public class Helpers {
     }
 
     /**
-     * Handles the setup of the CI server and checks that all necessary values are set
+     * Handles the setup of the CI org.groupp22.server and checks that all necessary values are set
      *
      * @param args command line arguments
      */
     public static void setUpConfiguration(@NotNull String[] args) {
-        if (args.length != 3) throw new MissingResourceException("Missing configuration values", "", "");
+        if (args.length != 2) throw new MissingResourceException("Missing configuration values", "", "");
         Configuration.BUCKET_NAME = args[0];
         Configuration.S3_BUCKET_REGION = args[1];
-        Configuration.SERVER_PORT = Integer.parseInt(args[2]);
 
         AWSFileUploader awsFileUploader = new AWSFileUploader();
         Configuration.PREVIOUS_BUILDS = awsFileUploader.getReports();
