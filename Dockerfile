@@ -1,12 +1,12 @@
-FROM openjdk:8-jdk-alpine AS runner
+FROM adoptopenjdk/openjdk8:alpine as builder
 
 RUN apk add --update ca-certificates && rm -rf /var/cache/apk/* && \
   find /usr/share/ca-certificates/mozilla/ -name "*.crt" -exec keytool -import -trustcacerts \
-  -keystore /usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts -storepass changeit -noprompt \
+  -keystore /opt/java/openjdk/jre/lib/security/cacerts -storepass changeit -noprompt \
   -file {} -alias {} \; && \
-  keytool -list -keystore /usr/lib/jvm/java-1.8-openjdk/jre/lib/security/cacerts --storepass changeit
+  keytool -list -keystore /opt/java/openjdk/jre/lib/security/cacerts --storepass changeit
 
-ENV MAVEN_VERSION 3.5.4
+ENV MAVEN_VERSION 3.6.3
 ENV MAVEN_HOME /usr/lib/mvn
 ENV PATH $MAVEN_HOME/bin:$PATH
 
@@ -15,10 +15,20 @@ RUN wget http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/ap
   rm apache-maven-$MAVEN_VERSION-bin.tar.gz && \
   mv apache-maven-$MAVEN_VERSION /usr/lib/mvn
 
-COPY target/org.ci-org.group22.server-jar-with-dependencies.jar /usr/app/
+WORKDIR /app/src
 
-WORKDIR /usr/app
+RUN mkdir reports
 
-RUN mkdir -p /usr/app/reports
+RUN mkdir git
 
-CMD java -jar org.ci-org.group22.server-jar-with-dependencies.jar dd2480-assignment-2 eu-north-1
+COPY src build/src
+
+COPY pom.xml build/
+
+RUN mvn -f build/ clean package
+
+RUN mv build/target/assignment-2-1.0-SNAPSHOT-launcher.jar ./ci-server.jar
+
+RUN rm -rf build
+
+CMD java -jar ci-server.jar dd2480-assignment-2 eu-north-1

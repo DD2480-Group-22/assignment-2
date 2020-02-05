@@ -1,0 +1,13 @@
+target
+docker-compose.yml
+*.jar
+.idea
+.travis.yml
+.github
+.git
+log
+git
+reports
+assignment-2.iml
+Dockerfile
+*.md
