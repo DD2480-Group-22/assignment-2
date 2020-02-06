@@ -10,7 +10,7 @@ public class App {
             ContinuousIntegrationServer server = new ContinuousIntegrationServer();
             server.runServer(args);
         } catch (Exception e) {
-            logger.error("Something went wrong while running the org.groupp22.server", e);
+            logger.error("Something went wrong while running the CI-Server", e);
         }
     }
 }
