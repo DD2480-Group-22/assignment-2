@@ -79,7 +79,9 @@ public class AWSFileUploader {
             ObjectListing objectListing = s3Client.listObjects(Configuration.BUCKET_NAME);
             for (S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {
                 if (objectSummary.getKey().matches("reports/[A-Za-z0-9_-]+.txt")) {
-                    reports.add(objectSummary.getKey().split("reports/")[1]);
+                    final String fileNameType = objectSummary.getKey().split("reports/")[1];
+                    final String fileName = fileNameType.replace(".txt", "");
+                    reports.add(fileName);
                 }
             }
             return reports;
