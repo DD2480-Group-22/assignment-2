@@ -82,7 +82,7 @@ public class GitStatusHandler {
 		CloseableHttpClient httpClient = HttpClientBuilder.create().build();
 
 		try {
-		    HttpPost request = new HttpPost("http://github.com");
+		    HttpPost request = new HttpPost(createCommitUrl);
 		    StringEntity params = new StringEntity(json.toString());
 		    request.addHeader("content-type", "application/json");
 		    request.setEntity(params);
