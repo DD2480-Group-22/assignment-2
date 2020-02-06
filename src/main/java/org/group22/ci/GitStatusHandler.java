@@ -60,7 +60,7 @@ public class GitStatusHandler {
 	 */
 	public void sendStatus(boolean mavenResult) throws IOException {
 		
-		if (shaCommit == "") {
+		if (shaCommit.equals("")) {
 			logger.error("Error: tried to change the status of a commit without specifying the id!");
 			return;
 		}
