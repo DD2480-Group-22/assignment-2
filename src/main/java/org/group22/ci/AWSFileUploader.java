@@ -16,6 +16,7 @@ import org.group22.utilities.Configuration;
 import org.group22.utilities.Helpers;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,6 +37,46 @@ public class AWSFileUploader {
                 .withRegion(clientRegion).build();
     }
 
+    public void upload(final String fileName) {
+        uploadFile(fileName);
+        uploadHTML(fileName);
+    }
+
+    /**
+     * Uploads the file specified by {@code fileName} to an AWS bucket.
+     *
+     * @param fileName the name of the file
+     * @return {@code true} if the upload was successful, otherwise {@code false}
+     */
+    public boolean uploadHTML(final String fileName) {
+        try {
+            Helpers.txtToHTMLFile(fileName);
+            final String folderFileName = "reports_html/" + fileName + ".html";
+            PutObjectRequest request = new PutObjectRequest(
+                    Configuration.BUCKET_NAME,
+                    folderFileName,
+                    new File(Configuration.PATH_TO_REPORTS_HTML + fileName + ".html")
+            );
+
+            ObjectMetadata metadata = new ObjectMetadata();
+            metadata.setContentType("plain/html");
+            metadata.addUserMetadata("x-amz-meta-title", fileName);
+            request.setMetadata(metadata);
+            s3Client.putObject(request);
+            Helpers.updatePreviousBuilds(fileName);
+            logger.info("Uploaded file: {} to S3 bucket: {} ", fileName, Configuration.BUCKET_NAME);
+            return true;
+        } catch (AmazonServiceException e) {
+            logger.error("Amazon S3 failed to process the file: {}", fileName, e);
+        } catch (SdkClientException e) {
+            logger.error("Failed to contact Amazon S3 or the client couldn't parse the response from Amazon S3", e);
+        } catch (IOException e) {
+            logger.error("Failed to create HTML report", e);
+        }
+
+        return false;
+    }
+
     /**
      * Uploads the file specified by {@code fileName} to an AWS bucket.
      *
@@ -44,11 +85,11 @@ public class AWSFileUploader {
      */
     public boolean uploadFile(final String fileName) {
         try {
-            final String folderFileName = "reports/" + fileName;
+            final String folderFileName = "reports/" + fileName + ".txt";
             PutObjectRequest request = new PutObjectRequest(
                     Configuration.BUCKET_NAME,
                     folderFileName,
-                    new File(Configuration.PATH_TO_REPORTS + fileName)
+                    new File(Configuration.PATH_TO_REPORTS + fileName + ".txt")
             );
 
             ObjectMetadata metadata = new ObjectMetadata();

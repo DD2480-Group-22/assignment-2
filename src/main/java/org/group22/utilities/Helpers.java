@@ -8,12 +8,11 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Scanner;
-
-import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.MissingResourceException;
+import java.util.Scanner;
 
 public class Helpers {
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Helpers.class);
@@ -119,7 +118,7 @@ public class Helpers {
     public static void updatePreviousBuilds(final String newReport) {
         Configuration.PREVIOUS_BUILDS.add(newReport);
     }
-    
+
     /**
      * Deletes the folder in the git directory with the name specified by {@code id}.
      *
@@ -138,67 +137,59 @@ public class Helpers {
         }
         return false;
     }
-   
-    //TODO: Add JavaDoc once function is done
-    public static void txtToHTMLFile(File textFile, String htmlFileName, AWSFileUploader aws) throws IOException {
-    	Scanner textScanner = new Scanner(textFile);
-    	
-    	int testsRun = 0;
-		int failures = 0;
-		int errors   = 0;
-		int skipped  = 0;
-    	
-		// Fetch all the relevant results
-    	while(textScanner.hasNextLine()) {
-    		String textLine = textScanner.nextLine().substring(7);
-    		
-    		if(textLine.contains("Tests run")) {
-    			String[] numbers = textLine.split(",");
-    			testsRun += Integer.parseInt( numbers[0].split(":")[1].substring(1) );
-    			failures += Integer.parseInt( numbers[1].split(":")[1].substring(1) );
-    			errors   += Integer.parseInt( numbers[2].split(":")[1].substring(1) );
-    			skipped  += Integer.parseInt( numbers[3].split(":")[1].substring(1) );
-    		}
-    	}
-    	textScanner.close();
-    	
-    		
-    	// Read from the html template and write to a new html file with placeholder values replaced
-    	Scanner htmlScanner = new Scanner(new File("template.html"));
-    	FileWriter htmlWriter = new FileWriter(htmlFileName);
-    	
-    	while(htmlScanner.hasNextLine()) {
-    		String htmlLine = htmlScanner.nextLine();
-    			
-    		if(htmlLine.contains("[tr]"))
-    			htmlLine = htmlLine.replace("[tr]", ""+testsRun);
-    		if(htmlLine.contains("[fl]"))
-    			htmlLine = htmlLine.replace("[fl]", ""+failures);
-    		if(htmlLine.contains("[er]"))
-    			htmlLine = htmlLine.replace("[er]", ""+errors);
-    		if(htmlLine.contains("[sk]"))
-    			htmlLine = htmlLine.replace("[sk]", ""+skipped);
-    		
-    		int height = 100 / testsRun;
-    		
-    		if(htmlLine.contains("[trHeight]"))
-    			htmlLine = htmlLine.replace("[trHeight]", ""+testsRun*height);
-    		if(htmlLine.contains("[flHeight]"))
-    			htmlLine = htmlLine.replace("[flHeight]", ""+failures*height);
-    		if(htmlLine.contains("[erHeight]"))
-    			htmlLine = htmlLine.replace("[erHeight]", ""+errors*height);
-    		if(htmlLine.contains("[skHeight]"))
-    			htmlLine = htmlLine.replace("[skHeight]", ""+skipped*height);
-    			
-    			
-    		htmlWriter.write(htmlLine);
-    	}
-    		
-    	htmlScanner.close();
-    	htmlWriter.close();
-    	
-    	// Upload the html file
-    	aws.uploadFile(htmlFileName);
-    }
 
+    //TODO: Add JavaDoc once function is done
+    public static void txtToHTMLFile(final String fileName) throws IOException {
+        Scanner textScanner = new Scanner(new File(Configuration.PATH_TO_REPORTS + fileName + ".txt"));
+
+        int testsRun = 0;
+        int failures = 0;
+        int errors = 0;
+        int skipped = 0;
+
+        // Fetch all the relevant results
+        while (textScanner.hasNextLine()) {
+            String textLine = textScanner.nextLine().substring(7);
+            if (textLine.contains("Tests run")) {
+                String[] numbers = textLine.split(",");
+                testsRun += Integer.parseInt(numbers[0].split(":")[1].substring(1));
+                failures += Integer.parseInt(numbers[1].split(":")[1].substring(1));
+                errors += Integer.parseInt(numbers[2].split(":")[1].substring(1));
+                skipped += Integer.parseInt(numbers[3].split(":")[1].substring(1));
+            }
+        }
+        textScanner.close();
+
+        // Read from the html template and write to a new html file with placeholder values replaced
+        InputStream inputStream = Helpers.class.getClassLoader().getResourceAsStream("HTML/template.html");
+        Scanner htmlScanner = new Scanner(inputStream);
+        FileWriter htmlWriter = new FileWriter(Configuration.PATH_TO_REPORTS_HTML + fileName + ".html");
+        while (htmlScanner.hasNextLine()) {
+            String htmlLine = htmlScanner.nextLine();
+            if (htmlLine.contains("[tr]"))
+                htmlLine = htmlLine.replace("[tr]", "" + testsRun);
+            if (htmlLine.contains("[fl]"))
+                htmlLine = htmlLine.replace("[fl]", "" + failures);
+            if (htmlLine.contains("[er]"))
+                htmlLine = htmlLine.replace("[er]", "" + errors);
+            if (htmlLine.contains("[sk]"))
+                htmlLine = htmlLine.replace("[sk]", "" + skipped);
+
+            int height = 100 / testsRun;
+
+            if (htmlLine.contains("[trHeight]"))
+                htmlLine = htmlLine.replace("[trHeight]", "" + testsRun * height);
+            if (htmlLine.contains("[flHeight]"))
+                htmlLine = htmlLine.replace("[flHeight]", "" + failures * height);
+            if (htmlLine.contains("[erHeight]"))
+                htmlLine = htmlLine.replace("[erHeight]", "" + errors * height);
+            if (htmlLine.contains("[skHeight]"))
+                htmlLine = htmlLine.replace("[skHeight]", "" + skipped * height);
+
+            htmlWriter.write(htmlLine);
+        }
+
+        htmlScanner.close();
+        htmlWriter.close();
+    }
 }

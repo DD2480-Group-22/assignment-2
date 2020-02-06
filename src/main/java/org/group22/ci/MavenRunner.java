@@ -25,7 +25,7 @@ public class MavenRunner {
         this.repositoryName = repositoryName;
     }
 
-    public boolean runProject() {
+    public void runProject() {
         InvocationRequest request = new DefaultInvocationRequest();
         request.setBaseDirectory(new File(Configuration.PATH_TO_GIT + projectId + "/" + repositoryName));
         request.setGoals(Collections.singletonList("test"));
@@ -48,8 +48,6 @@ public class MavenRunner {
             if (result.getExitCode() != 0) {
                 throw new IllegalStateException("Build failed");
             }
-
-            return true;
         } catch (MavenInvocationException e) {
             logger.error("Error while trying to run testes", e);
         } catch (IllegalStateException e) {
@@ -57,7 +55,5 @@ public class MavenRunner {
         } catch (FileNotFoundException e) {
             logger.error("Could not find report file", e);
         }
-
-        return false;
     }
 }
