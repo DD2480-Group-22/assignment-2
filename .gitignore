@@ -26,7 +26,7 @@ hs_err_pid*
 .idea
 assignment-2.iml
 
-#Eclipse auto-generated files
+# Eclipse auto-generated files
 .classpath
 .project
 .settings
@@ -39,3 +39,8 @@ reports
 log
 
 .DS_Store
+
+# HTML generator test files
+results.txt
+results.html
+TestHTMLGenerator.java

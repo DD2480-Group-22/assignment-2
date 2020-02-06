@@ -19,6 +19,8 @@ WORKDIR /app/src
 
 RUN mkdir reports
 
+RUN mkdir reports_html
+
 RUN mkdir git
 
 COPY src build/src
