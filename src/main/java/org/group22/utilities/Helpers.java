@@ -260,14 +260,14 @@ public class Helpers {
     private static Map<String, String> substitutionMap(@NotNull final Result result, final int height) {
         Map<String, String> map = new HashMap<>();
         for (String[] data : new String[][]{
-                {"[tr]", Integer.toString(result.testRun)},
-                {"[fl]", Integer.toString(result.failures)},
-                {"[er]", Integer.toString(result.errors)},
-                {"[sk]", Integer.toString(result.skipped)},
-                {"[trHeight]", Integer.toString(result.testRun * height)},
-                {"[flHeight]", Integer.toString(result.failures * height)},
-                {"[erHeight]", Integer.toString(result.errors * height)},
-                {"[skHeight]", Integer.toString(result.skipped * height)},
+                {"[tr]", Integer.toString(result.getTestRun())},
+                {"[fl]", Integer.toString(result.getFailures())},
+                {"[er]", Integer.toString(result.getErrors())},
+                {"[sk]", Integer.toString(result.getSkipped())},
+                {"[trHeight]", Integer.toString(result.getTestRun() * height)},
+                {"[flHeight]", Integer.toString(result.getFailures() * height)},
+                {"[erHeight]", Integer.toString(result.getErrors() * height)},
+                {"[skHeight]", Integer.toString(result.getSkipped() * height)},
         }) {
             if (map.put(data[0], data[1]) != null) {
                 throw new IllegalStateException("Duplicate key");
@@ -280,16 +280,52 @@ public class Helpers {
      * Helper class for storing the values parsed from Maven result file.
      */
     private static class Result {
-        final int testRun;
-        final int failures;
-        final int errors;
-        final int skipped;
+        private final int testRun;
+        private final int failures;
+        private final int errors;
+        private final int skipped;
 
         public Result(final int testRun, final int failures, final int errors, final int skipped) {
             this.testRun = testRun;
             this.failures = failures;
             this.errors = errors;
             this.skipped = skipped;
+        }
+
+        /**
+         * Getter function for the {@code testRun} field.
+         *
+         * @return The value of {@code testRun}
+         */
+        public int getTestRun() {
+            return testRun;
+        }
+
+        /**
+         * Getter function for the {@code failures} field.
+         *
+         * @return The value of {@code failures}
+         */
+        public int getFailures() {
+            return failures;
+        }
+
+        /**
+         * Getter function for the {@code errors} field.
+         *
+         * @return The value of {@code errors}
+         */
+        public int getErrors() {
+            return errors;
+        }
+
+        /**
+         * Getter function for the {@code skipped} field.
+         *
+         * @return The value of {@code skipped}
+         */
+        public int getSkipped() {
+            return skipped;
         }
     }
 }
