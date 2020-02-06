@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import org.json.JSONObject;
+import java.util.MissingResourceException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,6 +45,18 @@ public class HelpersTest {
 			id.put("id", "id");
 			json.put("head_commit", id); 
         	assertEquals("id", Helpers.getHeadCommitId(json));
+		}
+	}
+
+	@Nested
+	@DisplayName("Tests the get Branch function")
+	class getBranchTest {
+		@Test
+		@DisplayName("Basic test")
+		void basicTest() {
+			JSONObject json = new JSONObject();
+			json.put("ref", "refs/heads/branch_name");
+        	assertEquals("branch_name", Helpers.getBranch(json));
 		}
 	}
 
@@ -86,6 +99,21 @@ public class HelpersTest {
 			repo.put("clone_url", "url");
 			json.put("repository", repo); 
         	assertEquals("url", Helpers.getCloneURL(json));
+		}
+	}
+
+	@Nested
+	@DisplayName("Tests the setUpConfiguration function")
+	class setUpConfigurationTest {
+		@Test
+		@DisplayName("Basic test")
+		void basicTest() {
+			String[] args1 = {"arg1", "arg2", "arg3"};
+			String[] args2 = {"", "arg2"};
+			String[] args3 = {"arg1", ""}; 
+        	assertThrows(MissingResourceException.class, () -> {Helpers.setUpConfiguration(args1);});
+        	assertThrows(IllegalArgumentException.class, () -> {Helpers.setUpConfiguration(args2);});
+        	assertThrows(IllegalArgumentException.class, () -> {Helpers.setUpConfiguration(args3);});
 		}
 	}
 }
