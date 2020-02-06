@@ -193,7 +193,7 @@ public class Helpers {
         htmlScanner.close();
         htmlWriter.close();
     }
-  
+
     /**
      * Generates the index {@code HTML} landing page as a {@code String}.
      *
