@@ -29,6 +29,7 @@ assignment-2.iml
 # Eclipse auto-generated files
 .classpath
 .project
+.settings
 *.prefs
 
 # Project specific

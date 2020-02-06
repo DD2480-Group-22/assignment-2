@@ -2,6 +2,7 @@ package org.group22.utilities;
 
 import org.apache.commons.io.FileUtils;
 import org.group22.ci.AWSFileUploader;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -191,5 +192,48 @@ public class Helpers {
 
         htmlScanner.close();
         htmlWriter.close();
+    }
+  
+    /**
+     * Generates the index {@code HTML} landing page as a {@code String}.
+     *
+     * @return The {@code HTML} page as a {@code String}
+     */
+    @NotNull
+    public static String generateIndex() {
+        StringBuilder stringBuilderList = new StringBuilder();
+        stringBuilderList.append("<!DOCTYPE html> <html lang=\"en\">");
+        stringBuilderList.append("<head>" + "<meta charset=\"UTF-8\">" + "<title>CI Server</title>" + "</head>");
+        stringBuilderList.append("<body>");
+        stringBuilderList.append("<h1>Index Group 22 - CI Server</h1>");
+        stringBuilderList.append("<h2>List of previous builds on the CI server</h2>");
+        stringBuilderList.append("<ul>");
+        for (String id : Configuration.PREVIOUS_BUILDS) {
+            stringBuilderList.append("<li>");
+            stringBuilderList.append("<a href=\"");
+            stringBuilderList.append(reportAddress(id));
+            stringBuilderList.append("\">");
+            stringBuilderList.append(id);
+            stringBuilderList.append("</a>");
+            stringBuilderList.append("</li>");
+        }
+        stringBuilderList.append("</ul>");
+        stringBuilderList.append("</body>");
+        stringBuilderList.append("</html>");
+
+        return stringBuilderList.toString();
+    }
+
+    /**
+     * Creates the URL to a report stored on AWS.
+     *
+     * @param id The id of the report
+     * @return The URL to the report
+     */
+    @NotNull
+    @Contract(pure = true)
+    public static String reportAddress(final String id) {
+        return "https://" + Configuration.BUCKET_NAME + ".s3." +
+                Configuration.S3_BUCKET_REGION + ".amazonaws.com/reports/" + id + ".txt";
     }
 }
