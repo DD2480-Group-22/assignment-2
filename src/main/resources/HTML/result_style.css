@@ -44,3 +44,8 @@ h1 {
 #skip {
 	background-color:grey;
 }
+
+input {
+	width:100%;
+}
+

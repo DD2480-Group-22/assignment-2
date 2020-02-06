@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Main Page</title>
+<link rel="stylesheet" type="text/css" href="result_style.css">
+<script type="text/javascript">
+	function getResults() {
+		result_id = document.getElementById("id_field").value;
+		
+		url = "http://dd2480-assignment-2.s3-website.eu-north-1.amazonaws.com/reports_html/"
+			+ result_id;
+		
+		window.location.href = url;
+	}
+</script>
+</head>
+<body>
+	<h1>Group 22 CI Server</h1>
+
+	<div class="result_container">
+		<input type="text" placeholder="Write your result ID here"
+			id="id_field">
+	</div>
+	<div class="result_container">
+		<button onclick="getResults()">Get results!</button>
+	</div>
+</body>
+</html>
