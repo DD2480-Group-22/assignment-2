@@ -68,5 +68,7 @@ public class ProjectTester {
         for (int i = 0; i < 3 && !reportSaved; i++) {
             reportSaved = awsFileUploader.uploadFile(id);
         }
+
+        Helpers.cleanUp(id);
     }
 }

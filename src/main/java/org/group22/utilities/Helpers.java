@@ -1,14 +1,18 @@
 package org.group22.utilities;
 
+import org.apache.commons.io.FileUtils;
 import org.group22.ci.AWSFileUploader;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.MissingResourceException;
 
 public class Helpers {
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Helpers.class);
 
     /**
      * Generates a {@code String} that is used as an id for each build. The function combines the head commit id supplied
@@ -110,5 +114,24 @@ public class Helpers {
      */
     public static void updatePreviousBuilds(final String newReport) {
         Configuration.PREVIOUS_BUILDS.add(newReport);
+    }
+
+    /**
+     * Deletes the folder in the git directory with the name specified by {@code id}.
+     *
+     * @param id The name of the directory to delete
+     * @return {@code true} if the directory was deleted, {@code false} if the directory with the name {@code id}
+     * could not be deleted
+     */
+    public static boolean cleanUp(final String id) {
+        try {
+            FileUtils.deleteDirectory(new File(Configuration.PATH_TO_GIT + id));
+            return true;
+        } catch (IllegalArgumentException e) {
+            logger.error("The directory {} does not exist or is not a directory", id, e);
+        } catch (IOException e) {
+            logger.error("Failed to delete the directory: {}", id, e);
+        }
+        return false;
     }
 }
