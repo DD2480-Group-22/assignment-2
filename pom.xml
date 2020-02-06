@@ -15,6 +15,7 @@
     </properties>
 
     <build>
+    	<testSourceDirectory>src/test/java</testSourceDirectory>
         <finalName>org.ci-org.group22.server</finalName>
         <plugins>
             <plugin>
@@ -74,6 +75,18 @@
         </plugins>
     </build>
     <dependencies>
+    	<dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.6.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.platform</groupId>
+            <artifactId>junit-platform-runner</artifactId>
+            <version>1.6.0-M1</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
