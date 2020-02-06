@@ -50,7 +50,7 @@ public class ContinuousIntegrationServer extends AbstractHandler {
             if ("GET".equalsIgnoreCase(request.getMethod())) {
                 handleGetRequest(request, response, target);
             } else if ("POST".equalsIgnoreCase(request.getMethod())) {
-                handlePostRequest(request, response, target);
+                handlePostRequest(request, response);
             }
         } catch (IOException e) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Something went wrong while handling request");
@@ -99,7 +99,7 @@ public class ContinuousIntegrationServer extends AbstractHandler {
      * @param response The response
      * @throws IOException If something goes wrong while parsing the request or sending the response
      */
-    private void handlePostRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, final String target) throws IOException {
+    private void handlePostRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws IOException {
         String payload = IOUtils.toString(request.getReader());
         try {
             JSONObject jsonObject = new JSONObject(payload);
