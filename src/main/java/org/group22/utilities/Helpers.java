@@ -6,12 +6,11 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.Scanner;
 
@@ -124,23 +123,28 @@ public class Helpers {
      * Deletes the folder in the git directory with the name specified by {@code id}.
      *
      * @param id The name of the directory to delete
-     * @return {@code true} if the directory was deleted, {@code false} if the directory with the name {@code id}
-     * could not be deleted
      */
-    public static boolean cleanUp(final String id) {
+    public static void cleanUp(final String id) {
         try {
             FileUtils.deleteDirectory(new File(Configuration.PATH_TO_GIT + id));
-            return true;
         } catch (IllegalArgumentException e) {
             logger.error("The directory {} does not exist or is not a directory", id, e);
         } catch (IOException e) {
             logger.error("Failed to delete the directory: {}", id, e);
         }
-        return false;
     }
 
-    //TODO: Add JavaDoc once function is done
-    public static void txtToHTMLFile(final String fileName) throws IOException {
+    /**
+     * Parses the output file from the Maven test and counts number of tests run, number of failures, number of errors,
+     * and number of skipped tests. Returns a {@code Result} object containing the result from the parse.
+     *
+     * @param fileName The name of the file containing the Maven output
+     * @return {@code Result} object
+     * @throws FileNotFoundException If couldn't find report file
+     */
+    @NotNull
+    @Contract("_ -> new")
+    private static Result parseResultFile(final String fileName) throws FileNotFoundException {
         Scanner textScanner = new Scanner(new File(Configuration.PATH_TO_REPORTS + fileName + ".txt"));
 
         int testsRun = 0;
@@ -161,31 +165,39 @@ public class Helpers {
         }
         textScanner.close();
 
-        // Read from the html template and write to a new html file with placeholder values replaced
-        InputStream inputStream = Helpers.class.getClassLoader().getResourceAsStream("HTML/template.html");
-        Scanner htmlScanner = new Scanner(inputStream);
-        FileWriter htmlWriter = new FileWriter(Configuration.PATH_TO_REPORTS_HTML + fileName + ".html");
+        return new Result(testsRun, failures, errors, skipped);
+    }
+
+
+    /**
+     * Generates a {@code HTML} file based on the result of the Maven test. The generated {@code HTML} file is saved
+     * to the system.
+     *
+     * @param fileName The name of the file containing the Maven test result
+     * @throws IOException If there was an issue reading or writing to file
+     */
+    public static void txtToHTMLFile(final String fileName) throws IOException {
+        final Result result = parseResultFile(fileName);
+        final InputStream inputStream = Helpers.class.getClassLoader().getResourceAsStream("HTML/template.html");
+        final Scanner htmlScanner;
+
+        if (inputStream != null) {
+            htmlScanner = new Scanner(inputStream);
+        } else {
+            throw new IOException("Can't find HTML template");
+        }
+
+        final FileWriter htmlWriter = new FileWriter(Configuration.PATH_TO_REPORTS_HTML + fileName + ".html");
+        final int height = 100 / result.testRun;
+        final Map<String, String> map = substitutionMap(result, height);
+
         while (htmlScanner.hasNextLine()) {
             String htmlLine = htmlScanner.nextLine();
-            if (htmlLine.contains("[tr]"))
-                htmlLine = htmlLine.replace("[tr]", "" + testsRun);
-            if (htmlLine.contains("[fl]"))
-                htmlLine = htmlLine.replace("[fl]", "" + failures);
-            if (htmlLine.contains("[er]"))
-                htmlLine = htmlLine.replace("[er]", "" + errors);
-            if (htmlLine.contains("[sk]"))
-                htmlLine = htmlLine.replace("[sk]", "" + skipped);
-
-            int height = 100 / testsRun;
-
-            if (htmlLine.contains("[trHeight]"))
-                htmlLine = htmlLine.replace("[trHeight]", "" + testsRun * height);
-            if (htmlLine.contains("[flHeight]"))
-                htmlLine = htmlLine.replace("[flHeight]", "" + failures * height);
-            if (htmlLine.contains("[erHeight]"))
-                htmlLine = htmlLine.replace("[erHeight]", "" + errors * height);
-            if (htmlLine.contains("[skHeight]"))
-                htmlLine = htmlLine.replace("[skHeight]", "" + skipped * height);
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                if (htmlLine.contains(entry.getKey())) {
+                    htmlLine = htmlLine.replace(entry.getKey(), entry.getValue());
+                }
+            }
 
             htmlWriter.write(htmlLine);
         }
@@ -235,5 +247,49 @@ public class Helpers {
     public static String reportAddress(final String id) {
         return "https://" + Configuration.BUCKET_NAME + ".s3." +
                 Configuration.S3_BUCKET_REGION + ".amazonaws.com/reports/" + id + ".txt";
+    }
+
+    /**
+     * Generates map for replacing placeholder values in HTML template with values from {@code Result} object.
+     *
+     * @param result The {@code Result} object
+     * @param height The height
+     * @return A map with placeholder as key and result as value
+     */
+    @NotNull
+    private static Map<String, String> substitutionMap(@NotNull final Result result, final int height) {
+        Map<String, String> map = new HashMap<>();
+        for (String[] data : new String[][]{
+                {"[tr]", Integer.toString(result.testRun)},
+                {"[fl]", Integer.toString(result.failures)},
+                {"[er]", Integer.toString(result.errors)},
+                {"[sk]", Integer.toString(result.skipped)},
+                {"[trHeight]", Integer.toString(result.testRun * height)},
+                {"[flHeight]", Integer.toString(result.failures * height)},
+                {"[erHeight]", Integer.toString(result.errors * height)},
+                {"[skHeight]", Integer.toString(result.skipped * height)},
+        }) {
+            if (map.put(data[0], data[1]) != null) {
+                throw new IllegalStateException("Duplicate key");
+            }
+        }
+        return map;
+    }
+
+    /**
+     * Helper class for storing the values parsed from Maven result file.
+     */
+    private static class Result {
+        final int testRun;
+        final int failures;
+        final int errors;
+        final int skipped;
+
+        public Result(final int testRun, final int failures, final int errors, final int skipped) {
+            this.testRun = testRun;
+            this.failures = failures;
+            this.errors = errors;
+            this.skipped = skipped;
+        }
     }
 }
