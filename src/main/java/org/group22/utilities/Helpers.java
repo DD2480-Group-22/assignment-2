@@ -140,7 +140,7 @@ public class Helpers {
     }
    
     //TODO: Add JavaDoc once function is done
-    public static void txtToHTMLFile(File textFile) throws IOException {
+    public static void txtToHTMLFile(File textFile, String htmlFileName, AWSFileUploader aws) throws IOException {
     	Scanner textScanner = new Scanner(textFile);
     	
     	int testsRun = 0;
@@ -148,6 +148,7 @@ public class Helpers {
 		int errors   = 0;
 		int skipped  = 0;
     	
+		// Fetch all the relevant results
     	while(textScanner.hasNextLine()) {
     		String textLine = textScanner.nextLine().substring(7);
     		
@@ -157,16 +158,15 @@ public class Helpers {
     			failures += Integer.parseInt( numbers[1].split(":")[1].substring(1) );
     			errors   += Integer.parseInt( numbers[2].split(":")[1].substring(1) );
     			skipped  += Integer.parseInt( numbers[3].split(":")[1].substring(1) );
-    			
     		}
     	}
     	textScanner.close();
     	
     		
-    	// Read from the html template and write to new html file with placeholder values replaced
+    	// Read from the html template and write to a new html file with placeholder values replaced
     	Scanner htmlScanner = new Scanner(new File("template.html"));
-    	FileWriter htmlWriter = new FileWriter("results.html");
-    		
+    	FileWriter htmlWriter = new FileWriter(htmlFileName);
+    	
     	while(htmlScanner.hasNextLine()) {
     		String htmlLine = htmlScanner.nextLine();
     			
@@ -196,6 +196,9 @@ public class Helpers {
     		
     	htmlScanner.close();
     	htmlWriter.close();
+    	
+    	// Upload the html file
+    	aws.uploadFile(htmlFileName);
     }
 
 }

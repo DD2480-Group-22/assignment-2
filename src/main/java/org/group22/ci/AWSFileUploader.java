@@ -44,11 +44,11 @@ public class AWSFileUploader {
      */
     public boolean uploadFile(final String fileName) {
         try {
-            final String folderFileName = "reports/" + fileName + ".txt";
+            final String folderFileName = "reports/" + fileName;
             PutObjectRequest request = new PutObjectRequest(
                     Configuration.BUCKET_NAME,
                     folderFileName,
-                    new File(Configuration.PATH_TO_REPORTS + fileName + ".txt")
+                    new File(Configuration.PATH_TO_REPORTS + fileName)
             );
 
             ObjectMetadata metadata = new ObjectMetadata();
