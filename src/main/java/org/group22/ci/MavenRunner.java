@@ -2,7 +2,6 @@ package org.group22.ci;
 
 import org.apache.maven.shared.invoker.*;
 import org.group22.utilities.Configuration;
-import org.group22.utilities.Helpers;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -49,8 +48,6 @@ public class MavenRunner {
                 throw new IllegalStateException("Build failed");
             }
 
-            Helpers.cleanUp(projectId);
-
             return true;
         } catch (MavenInvocationException e) {
             logger.error("Error while trying to run testes", e);
@@ -59,8 +56,6 @@ public class MavenRunner {
         } catch (FileNotFoundException e) {
             logger.error("Could not find report file", e);
         }
-
-        Helpers.cleanUp(projectId);
 
         return false;
     }
