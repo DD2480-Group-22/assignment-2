@@ -7,4 +7,4 @@
 
 ## Configuration
 ### Environment variables
-* GITHUB_TOKEN: Github access token
+    * GITHUB_TOKEN: Github access token
