@@ -29,6 +29,7 @@ public class MavenRunner {
         InvocationRequest request = new DefaultInvocationRequest();
         request.setBaseDirectory(new File(Configuration.PATH_TO_GIT + projectId + "/" + repositoryName));
         request.setGoals(Collections.singletonList("test"));
+        request.setBatchMode(true);
 
         Invoker invoker = new DefaultInvoker();
         invoker.setMavenHome(new File(Configuration.M3_HOME));
