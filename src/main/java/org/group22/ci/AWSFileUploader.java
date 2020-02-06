@@ -60,7 +60,7 @@ public class AWSFileUploader {
             logger.info("Uploaded file: {} to S3 bucket: {} ", fileName, Configuration.BUCKET_NAME);
             return true;
         } catch (AmazonServiceException e) {
-            logger.error("Amazon S3 failed to process the file: " + fileName, e);
+            logger.error("Amazon S3 failed to process the file: {}", fileName, e);
         } catch (SdkClientException e) {
             logger.error("Failed to contact Amazon S3 or the client couldn't parse the response from Amazon S3", e);
         }
@@ -79,12 +79,14 @@ public class AWSFileUploader {
             ObjectListing objectListing = s3Client.listObjects(Configuration.BUCKET_NAME);
             for (S3ObjectSummary objectSummary : objectListing.getObjectSummaries()) {
                 if (objectSummary.getKey().matches("reports/[A-Za-z0-9_-]+.txt")) {
-                    reports.add(objectSummary.getKey().split("reports/")[1]);
+                    final String fileNameType = objectSummary.getKey().split("reports/")[1];
+                    final String fileName = fileNameType.replace(".txt", "");
+                    reports.add(fileName);
                 }
             }
             return reports;
         } catch (AmazonServiceException e) {
-            logger.error("Amazon S3 failed to return list of objects for bucket: " + Configuration.BUCKET_NAME, e);
+            logger.error("Amazon S3 failed to return list of objects for bucket: {}", Configuration.BUCKET_NAME, e);
         } catch (SdkClientException e) {
             logger.error("Failed to contact Amazon S3 or the client couldn't parse the response from Amazon S3", e);
         }

@@ -1,14 +1,19 @@
 package org.group22.utilities;
 
+import org.apache.commons.io.FileUtils;
 import org.group22.ci.AWSFileUploader;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.MissingResourceException;
 
 public class Helpers {
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Helpers.class);
 
     /**
      * Generates a {@code String} that is used as an id for each build. The function combines the head commit id supplied
@@ -110,5 +115,67 @@ public class Helpers {
      */
     public static void updatePreviousBuilds(final String newReport) {
         Configuration.PREVIOUS_BUILDS.add(newReport);
+    }
+
+    /**
+     * Deletes the folder in the git directory with the name specified by {@code id}.
+     *
+     * @param id The name of the directory to delete
+     * @return {@code true} if the directory was deleted, {@code false} if the directory with the name {@code id}
+     * could not be deleted
+     */
+    public static boolean cleanUp(final String id) {
+        try {
+            FileUtils.deleteDirectory(new File(Configuration.PATH_TO_GIT + id));
+            return true;
+        } catch (IllegalArgumentException e) {
+            logger.error("The directory {} does not exist or is not a directory", id, e);
+        } catch (IOException e) {
+            logger.error("Failed to delete the directory: {}", id, e);
+        }
+        return false;
+    }
+
+    /**
+     * Generates the index {@code HTML} landing page as a {@code String}.
+     *
+     * @return The {@code HTML} page as a {@code String}
+     */
+    @NotNull
+    public static String generateIndex() {
+        StringBuilder stringBuilderList = new StringBuilder();
+        stringBuilderList.append("<!DOCTYPE html> <html lang=\"en\">");
+        stringBuilderList.append("<head>" + "<meta charset=\"UTF-8\">" + "<title>CI Server</title>" + "</head>");
+        stringBuilderList.append("<body>");
+        stringBuilderList.append("<h1>Index Group 22 - CI Server</h1>");
+        stringBuilderList.append("<h2>List of previous builds on the CI server</h2>");
+        stringBuilderList.append("<ul>");
+        for (String id : Configuration.PREVIOUS_BUILDS) {
+            stringBuilderList.append("<li>");
+            stringBuilderList.append("<a href=\"");
+            stringBuilderList.append(reportAddress(id));
+            stringBuilderList.append("\">");
+            stringBuilderList.append(id);
+            stringBuilderList.append("</a>");
+            stringBuilderList.append("</li>");
+        }
+        stringBuilderList.append("</ul>");
+        stringBuilderList.append("</body>");
+        stringBuilderList.append("</html>");
+
+        return stringBuilderList.toString();
+    }
+
+    /**
+     * Creates the URL to a report stored on AWS.
+     *
+     * @param id The id of the report
+     * @return The URL to the report
+     */
+    @NotNull
+    @Contract(pure = true)
+    public static String reportAddress(final String id) {
+        return "https://" + Configuration.BUCKET_NAME + ".s3." +
+                Configuration.S3_BUCKET_REGION + ".amazonaws.com/reports/" + id + ".txt";
     }
 }
