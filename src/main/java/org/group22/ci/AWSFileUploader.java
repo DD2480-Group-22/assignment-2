@@ -64,7 +64,7 @@ public class AWSFileUploader {
             request.setMetadata(metadata);
             s3Client.putObject(request);
             Helpers.updatePreviousBuilds(fileName);
-            logger.info("Uploaded file: {} to S3 bucket: {} ", fileName, Configuration.BUCKET_NAME);
+            logger.info("Uploaded HTML file: {} to S3 bucket: {} ", fileName, Configuration.BUCKET_NAME);
             return true;
         } catch (AmazonServiceException e) {
             logger.error("Amazon S3 failed to process the file: {}", fileName, e);
@@ -98,7 +98,7 @@ public class AWSFileUploader {
             request.setMetadata(metadata);
             s3Client.putObject(request);
             Helpers.updatePreviousBuilds(fileName);
-            logger.info("Uploaded file: {} to S3 bucket: {} ", fileName, Configuration.BUCKET_NAME);
+            logger.info("Uploaded .txt file: {} to S3 bucket: {} ", fileName, Configuration.BUCKET_NAME);
             return true;
         } catch (AmazonServiceException e) {
             logger.error("Amazon S3 failed to process the file: {}", fileName, e);
