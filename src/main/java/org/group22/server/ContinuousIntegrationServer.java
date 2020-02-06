@@ -1,15 +1,15 @@
-package server;
+package org.group22.server;
 
-import ci.ProjectTester;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.group22.ci.ProjectTester;
+import org.group22.utilities.Configuration;
+import org.group22.utilities.Helpers;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
-import utilities.Configuration;
-import utilities.Helpers;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -18,7 +18,7 @@ import java.io.IOException;
 public class ContinuousIntegrationServer extends AbstractHandler {
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(ContinuousIntegrationServer.class);
 
-    public static void main(String[] args) throws Exception {
+    public void runServer(String[] args) throws Exception {
         Helpers.setUpConfiguration(args);
         Server server = new Server(Configuration.SERVER_PORT);
         server.setHandler(new ContinuousIntegrationServer());

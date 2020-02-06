@@ -1,6 +1,7 @@
-package utilities;
+package org.group22.utilities;
 
-import ci.AWSFileUploader;
+import org.apache.commons.io.FileUtils;
+import org.group22.ci.AWSFileUploader;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
@@ -9,11 +10,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Scanner;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.MissingResourceException;
 
 public class Helpers {
+    private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Helpers.class);
 
     /**
      * Generates a {@code String} that is used as an id for each build. The function combines the head commit id supplied
@@ -81,15 +84,14 @@ public class Helpers {
     }
 
     /**
-     * Handles the setup of the CI server and checks that all necessary values are set
+     * Handles the setup of the CI org.groupp22.server and checks that all necessary values are set
      *
      * @param args command line arguments
      */
     public static void setUpConfiguration(@NotNull String[] args) {
-        if (args.length != 3) throw new MissingResourceException("Missing configuration values", "", "");
+        if (args.length != 2) throw new MissingResourceException("Missing configuration values", "", "");
         Configuration.BUCKET_NAME = args[0];
         Configuration.S3_BUCKET_REGION = args[1];
-        Configuration.SERVER_PORT = Integer.parseInt(args[2]);
 
         AWSFileUploader awsFileUploader = new AWSFileUploader();
         Configuration.PREVIOUS_BUILDS = awsFileUploader.getReports();
@@ -118,7 +120,26 @@ public class Helpers {
         Configuration.PREVIOUS_BUILDS.add(newReport);
     }
     
-    
+    /**
+     * Deletes the folder in the git directory with the name specified by {@code id}.
+     *
+     * @param id The name of the directory to delete
+     * @return {@code true} if the directory was deleted, {@code false} if the directory with the name {@code id}
+     * could not be deleted
+     */
+    public static boolean cleanUp(final String id) {
+        try {
+            FileUtils.deleteDirectory(new File(Configuration.PATH_TO_GIT + id));
+            return true;
+        } catch (IllegalArgumentException e) {
+            logger.error("The directory {} does not exist or is not a directory", id, e);
+        } catch (IOException e) {
+            logger.error("Failed to delete the directory: {}", id, e);
+        }
+        return false;
+    }
+   
+    //TODO: Add JavaDoc once function is done
     public static void txtToHTMLFile(File textFile) throws IOException {
     	Scanner textScanner = new Scanner(textFile);
     	
@@ -176,4 +197,5 @@ public class Helpers {
     	htmlScanner.close();
     	htmlWriter.close();
     }
+
 }

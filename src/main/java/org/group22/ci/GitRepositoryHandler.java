@@ -1,4 +1,4 @@
-package ci;
+package org.group22.ci;
 
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
@@ -6,7 +6,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.InvalidRemoteException;
 import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
-import utilities.Configuration;
+import org.group22.utilities.Configuration;
 
 import java.io.File;
 
@@ -35,7 +35,7 @@ public class GitRepositoryHandler {
      * @return {@code true} if the repository was successfully cloned, otherwise {@code false}
      */
     public boolean cloneRepository() {
-        logger.info("Cloning repository: " + repositoryName);
+        logger.info("Cloning repository: {}", repositoryName);
 
         CloneCommand cloneCommand = Git.cloneRepository();
         cloneCommand.setURI(cloneURL);

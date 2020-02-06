@@ -37,6 +37,8 @@ git
 reports
 log
 
+.DS_Store
+
 # HTML generator test files
 results.txt
 results.html

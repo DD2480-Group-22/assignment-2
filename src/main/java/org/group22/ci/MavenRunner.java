@@ -1,7 +1,7 @@
-package ci;
+package org.group22.ci;
 
 import org.apache.maven.shared.invoker.*;
-import utilities.Configuration;
+import org.group22.utilities.Configuration;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,12 +29,13 @@ public class MavenRunner {
         InvocationRequest request = new DefaultInvocationRequest();
         request.setBaseDirectory(new File(Configuration.PATH_TO_GIT + projectId + "/" + repositoryName));
         request.setGoals(Collections.singletonList("test"));
+        request.setBatchMode(true);
 
         Invoker invoker = new DefaultInvoker();
         invoker.setMavenHome(new File(Configuration.M3_HOME));
 
         try {
-            logger.info("Running test for Maven project in repository: " + repositoryName);
+            logger.info("Running test for Maven project in repository: {}", repositoryName);
 
             PrintStream writeToFile = new PrintStream(new FileOutputStream(Configuration.PATH_TO_REPORTS + projectId + ".txt"));
             InvocationOutputHandler outputHandler = new PrintStreamHandler(writeToFile, false);
