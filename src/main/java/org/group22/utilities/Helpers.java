@@ -32,6 +32,20 @@ public class Helpers {
     }
 
     /**
+     * Checks if a JSON object contains a JSON object with the key {@code head_commit} and if that object contains a
+     * key with a value that is not {@code null}.
+     *
+     * @param jsonObject The JSON object that is being checked
+     * @return {@code true} if the requirements are meet, {@code false} otherwise
+     */
+    public static boolean isPushEvent(@NotNull JSONObject jsonObject) {
+        if (jsonObject.has("head_commit")) {
+            return jsonObject.getJSONObject("head_commit").get("id") != null;
+        }
+        return false;
+    }
+
+    /**
      * Extracts the head commit id from the JSON-object contained in the POST request from Github
      *
      * @param jsonObject the payload from the Github POST request
