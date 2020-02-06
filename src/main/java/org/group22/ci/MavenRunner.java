@@ -34,7 +34,7 @@ public class MavenRunner {
         invoker.setMavenHome(new File(Configuration.M3_HOME));
 
         try {
-            logger.info("Running test for Maven project in repository: " + repositoryName);
+            logger.info("Running test for Maven project in repository: {}", repositoryName);
 
             PrintStream writeToFile = new PrintStream(new FileOutputStream(Configuration.PATH_TO_REPORTS + projectId + ".txt"));
             InvocationOutputHandler outputHandler = new PrintStreamHandler(writeToFile, false);

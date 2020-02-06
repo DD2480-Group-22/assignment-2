@@ -35,7 +35,7 @@ public class GitRepositoryHandler {
      * @return {@code true} if the repository was successfully cloned, otherwise {@code false}
      */
     public boolean cloneRepository() {
-        logger.info("Cloning repository: " + repositoryName);
+        logger.info("Cloning repository: {}", repositoryName);
 
         CloneCommand cloneCommand = Git.cloneRepository();
         cloneCommand.setURI(cloneURL);
