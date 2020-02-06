@@ -23,7 +23,7 @@ import java.util.Set;
 public class AWSFileUploader {
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(AWSFileUploader.class);
     private final AmazonS3 s3Client;
-
+    private static final String CONNECTION_ERROR = "Failed to contact AWS S3 or the client couldn't parse the response from Amazon S3";
     /**
      * Creates and initializes a {@code AWSFileUploader} object. The constructor setups the authentication with
      * AWS services and sets the region.
@@ -69,7 +69,7 @@ public class AWSFileUploader {
         } catch (AmazonServiceException e) {
             logger.error("Amazon S3 failed to process the file: {}", fileName, e);
         } catch (SdkClientException e) {
-            logger.error("Failed to contact Amazon S3 or the client couldn't parse the response from Amazon S3", e);
+            logger.error(CONNECTION_ERROR, e);
         } catch (IOException e) {
             logger.error("Failed to create HTML report", e);
         }
@@ -103,7 +103,7 @@ public class AWSFileUploader {
         } catch (AmazonServiceException e) {
             logger.error("Amazon S3 failed to process the file: {}", fileName, e);
         } catch (SdkClientException e) {
-            logger.error("Failed to contact Amazon S3 or the client couldn't parse the response from Amazon S3", e);
+            logger.error(CONNECTION_ERROR, e);
         }
 
         return false;
