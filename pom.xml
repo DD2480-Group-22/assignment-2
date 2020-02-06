@@ -15,9 +15,17 @@
     </properties>
 
     <build>
-    	<testSourceDirectory>src/test/java</testSourceDirectory>
+    	<testSourceDirectory>src/test/java/org/group22</testSourceDirectory>
         <finalName>org.ci-org.group22.server</finalName>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M4</version>
+                <configuration>
+                    <useFile>false</useFile>
+                </configuration>
+                </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
