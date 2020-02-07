@@ -13,6 +13,7 @@ written by group 22.
   * Nils Streijffert: Setup tests of projects, setup server, pull repository from Github, upload to S3 bucket, Docker and deployment.
   * Pablo Aravena: Implemented code to work with the Git Status API. 
   * Felipe Vicencio: Did most of the unit tests. looked into implementing Amazon SES (but ended up being unnecessary).
+  * Erik Svensson: Did a couple of the unit test. Implemented the results parser and HTML generator. 
 
 ## Configuration
 ### Requirements for development
