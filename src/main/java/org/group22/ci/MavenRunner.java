@@ -58,8 +58,8 @@ public class MavenRunner {
 
             InvocationResult result = invoker.execute(request);
 
-            if (result.getExitCode() != 0) {
-                throw new IllegalStateException("Build failed");
+            if (result.getExitCode() == 0) {
+                return true;
             }
             
             // update status with success message
