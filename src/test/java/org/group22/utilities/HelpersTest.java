@@ -1,6 +1,5 @@
 package org.group22.utilities;
 
-import org.group22.ci.AWSFileUploader;
 import org.group22.utilities.Configuration;
 
 import org.junit.jupiter.api.DisplayName;
@@ -11,11 +10,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import org.json.JSONObject;
 import java.util.*;
-import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.*;
-
-import java.awt.geom.Point2D;
 
 public class HelpersTest {
 	@Nested
@@ -56,7 +52,7 @@ public class HelpersTest {
 
 	@Nested
 	@DisplayName("Tests the getHeadCommitId function")
-	class getHeadCommitIdTest {
+	class GetHeadCommitIdTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
@@ -70,7 +66,7 @@ public class HelpersTest {
 
 	@Nested
 	@DisplayName("Tests the get Branch function")
-	class getBranchTest {
+	class GetBranchTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
@@ -82,7 +78,7 @@ public class HelpersTest {
 
 	@Nested
 	@DisplayName("Tests the get Author function")
-	class getAuthorTest {
+	class GetAuthorTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
@@ -96,7 +92,7 @@ public class HelpersTest {
 
 	@Nested
 	@DisplayName("Tests the get Repository Name function")
-	class geRepositoryNameTest {
+	class GetRepositoryNameTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
@@ -110,7 +106,7 @@ public class HelpersTest {
 
 	@Nested
 	@DisplayName("Tests the get Clone URL function")
-	class getHeadCloneURLTest {
+	class GetHeadCloneURLTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
@@ -124,7 +120,7 @@ public class HelpersTest {
 
 	@Nested
 	@DisplayName("Tests the setUpConfiguration function")
-	class setUpConfigurationTest {
+	class SetUpConfigurationTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
@@ -138,8 +134,8 @@ public class HelpersTest {
 	}
 
 	@Nested
-	@DisplayName("Tests the updatePreviousBuilds function")
-	class updatePreviousBuildsTest {
+	@DisplayName("Tests the clean up function")
+	class UpdatePreviousBuildsTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
@@ -154,7 +150,7 @@ public class HelpersTest {
 	
 	@Nested
 	@DisplayName("Tests the generate index function")
-	class generateIndexTest {
+	class GenerateIndexTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
@@ -176,7 +172,7 @@ public class HelpersTest {
 
 	@Nested
 	@DisplayName("Tests the reportAddress function")
-	class reportAdressTest {
+	class ReportAdressTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
