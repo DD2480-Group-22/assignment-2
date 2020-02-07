@@ -244,19 +244,6 @@ public class Helpers {
     }
 
     /**
-     * Generates a {@code String} containing the URL for the text version of the build report specified by the {@code id}
-     * variable.
-     *
-     * @param id The id of the report
-     * @return The URL to the report
-     */
-    @NotNull
-    @Contract(pure = true)
-    public static String reportAddress(final String id) {
-        return getAddress(id, "reports") + ".txt";
-    }
-
-    /**
      * Generates a {@code String} containing the URL for the HTML version of the build report specified by the {@code id}
      * variable.
      *
