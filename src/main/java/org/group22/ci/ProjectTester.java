@@ -50,7 +50,7 @@ public class ProjectTester {
         logger.info("Started test of repository: {}, branch: {}, pushed by: {}, id: {}", repositoryName, branch, author, id);
 
         GitRepositoryHandler gitRepositoryHandler = new GitRepositoryHandler(id, repositoryName, cloneURL);
-        MavenRunner mavenRunner = new MavenRunner(id, repositoryName);
+        MavenRunner mavenRunner = new MavenRunner(id, repositoryName, author);
         AWSFileUploader awsFileUploader = new AWSFileUploader();
 
         boolean cloned = gitRepositoryHandler.cloneRepository();

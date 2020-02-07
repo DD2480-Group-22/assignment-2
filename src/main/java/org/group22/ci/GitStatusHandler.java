@@ -36,7 +36,7 @@ public class GitStatusHandler {
     }
 
     /**
-     * Constructor that does not need a specific SHA for the commit, but needs to call the setter for the commit SHA later for setting a status.
+     * Constructor that does not need a specific SHA for the commit, but needs to call the setter for the commit hash later to set a status.
      *
      * @param repo:  {@code String} with the repo name.
      * @param owner: {@code String} with the name of the owner of the repo.
@@ -86,20 +86,27 @@ public class GitStatusHandler {
     }
 
     /**
-     * Function to create the the status of the build to the repo using the Git Status API.
+     * Function used internally by {@code sendStatus} to set the status to "success" if the project build goes well.
      *
-     * @param mavenResult: the building results as a boolean, where {@code true} represents a successful build, and {@code false} the opposite.
      * @param partialJson: {@code JSONObject} containing part of the necessary fields for a successful API communication.
-     * @return partialJson: {@code JSONObject} containing the necessary data to interact with the API with only 2 values, either success or failure.
+     * @return partialJson: {@code JSONObject} containing the necessary data to interact with the API.
+     */    
+    public JSONObject buildSuccess(JSONObject partialJson) {
+        partialJson.put("state", "success");
+        partialJson.put("description", "The build succeeded!");
+        
+        return partialJson;
+    }
+    
+    /**
+     * Function used internally by {@code sendStatus} to set the status to "failure" if the project build fails.
+     *
+     * @param partialJson: {@code JSONObject} containing part of the necessary fields for a successful API communication.
+     * @return partialJson: {@code JSONObject} containing the necessary data to interact with the API.
      */
-    public JSONObject buildResults(boolean mavenResult, JSONObject partialJson) {
-        if (mavenResult) {
-            partialJson.put("state", "success");
-            partialJson.put("description", "The build succeeded!");
-        } else {
-            partialJson.put("state", "failure");
-            partialJson.put("description", "The build failed!");
-        }
+    public JSONObject buildFailure(JSONObject partialJson) {
+        partialJson.put("state", "failure");
+        partialJson.put("description", "The build failed!");
 
         return partialJson;
     }
@@ -107,11 +114,10 @@ public class GitStatusHandler {
     /**
      * General function to interact with the REST Git Status API.
      *
-     * @param mvnResults: {@code boolean} only used when calling {@code buildResults} for representing if a Maven build was successful or not.
      * @param messageId:  {@code int} representing one of the 4 possible build status (success, failure, waiting or error) to send back.
      * @throws IOException: throws {@code IOException} only if an unexpected error occurs trying to send the POST Request.
      */
-    public void sendStatus(int messageId, boolean mvnResults) throws IOException {
+    public void sendStatus(int messageId) throws IOException {
         if ("".equals(shaCommit)) {
             logger.error("Error: tried to change the status of a commit without specifying an id!");
             return;
@@ -127,16 +133,19 @@ public class GitStatusHandler {
         // switch deciding which action to take and send back as the current commit status
         switch (messageId) {
             case 1:
-                json = buildResults(mvnResults, json);
+                json = buildSuccess(json);
                 break;
             case 2:
+            	json = buildFailure(json);
+            	break;
+            case 3:
                 json = buildWaiting(json);
                 break;
-            case 3:
+            case 4:
                 json = buildError(json);
-                break;
+                break; 
             default:
-                logger.error("Error: non existent id for actions (1-3), yours was {}", messageId);
+                logger.error("Error: non existent id for actions (1-4), yours was {}", messageId);
                 return;
         }
 

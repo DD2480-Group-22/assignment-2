@@ -6,6 +6,7 @@ import org.group22.utilities.Configuration;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collections;
 
@@ -13,19 +14,31 @@ public class MavenRunner {
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MavenRunner.class);
     private final String projectId;
     private final String repositoryName;
-
+    private final String authorName;
+    
     /**
      * Creates and initializes a MavenRunner object
      *
      * @param id             the id of the build
      * @param repositoryName the name of the repository
      */
-    public MavenRunner(final String id, final String repositoryName) {
+    public MavenRunner(final String id, final String repositoryName, final String author) {
         this.projectId = id;
         this.repositoryName = repositoryName;
+        this.authorName = author;
     }
 
     public void runProject() {
+    	
+        GitStatusHandler gitStats = new GitStatusHandler(repositoryName, projectId, authorName);
+    	
+    	// set status to waiting
+    	try {
+    		gitStats.sendStatus(3);
+    	} catch (IOException e2) {
+    		logger.error("Error while trying to send message", e2);
+    	}
+    	
         InvocationRequest request = new DefaultInvocationRequest();
         request.setBaseDirectory(new File(Configuration.PATH_TO_GIT + projectId + "/" + repositoryName));
         request.setGoals(Collections.singletonList("test"));
@@ -33,7 +46,7 @@ public class MavenRunner {
 
         Invoker invoker = new DefaultInvoker();
         invoker.setMavenHome(new File(Configuration.M3_HOME));
-
+        
         try {
             logger.info("Running test for Maven project in repository: {}", repositoryName);
 
@@ -48,12 +61,38 @@ public class MavenRunner {
             if (result.getExitCode() != 0) {
                 throw new IllegalStateException("Build failed");
             }
+            
+            // update status with success message
+            try {
+            	gitStats.sendStatus(1);
+        	} catch (IOException e2) {
+                logger.error("Error while trying to send message", e2);
+            }
+            
         } catch (MavenInvocationException e) {
             logger.error("Error while trying to run testes", e);
+            // update status with error message
+            try {
+            	gitStats.sendStatus(4);
+            } catch (IOException e2) {
+                logger.error("Error while trying to send message", e2);
+            }
         } catch (IllegalStateException e) {
             logger.error("Build failed", e);
+            // update status with failure message
+            try {
+            	gitStats.sendStatus(2);
+            } catch (IOException e2) {
+                logger.error("Error while trying to send message", e2);
+            }
         } catch (FileNotFoundException e) {
             logger.error("Could not find report file", e);
-        }
+            // update status with error message
+            try {
+            	gitStats.sendStatus(4);
+            } catch (IOException e2) {
+                logger.error("Error while trying to send message", e2);
+            }  
+        } 
     }
 }
