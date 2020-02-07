@@ -57,15 +57,22 @@ public class ProjectTester {
         AWSFileUploader awsFileUploader = new AWSFileUploader();
         GitStatusHandler gitStatusHandler = new GitStatusHandler(repositoryName, commitId, author, id);
 
-        gitStatusHandler.sendStatus(BuildStatus.WAITING, false);
+        gitStatusHandler.sendStatus(BuildStatus.WAITING);
         boolean cloned = gitRepositoryHandler.cloneRepository();
 
         if (cloned) {
             final boolean buildResult = mavenRunner.runProject();
-            gitStatusHandler.sendStatus(BuildStatus.FINISHED, buildResult);
+            
+            if (buildResult) {
+            	gitStatusHandler.sendStatus(BuildStatus.SUCCESS);
+            } else {
+            	gitStatusHandler.sendStatus(BuildStatus.FAILURE);
+            }
+            
             awsFileUploader.upload(id);
+            
         } else {
-            gitStatusHandler.sendStatus(BuildStatus.ERROR, false);
+            gitStatusHandler.sendStatus(BuildStatus.ERROR);
         }
 
         Helpers.cleanUp(id);

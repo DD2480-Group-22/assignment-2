@@ -6,7 +6,6 @@ import org.group22.utilities.Configuration;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Collections;
 
@@ -28,16 +27,8 @@ public class MavenRunner {
         this.authorName = author;
     }
 
-    public void runProject() {
+    public boolean runProject() {
     	
-        GitStatusHandler gitStats = new GitStatusHandler(repositoryName, projectId, authorName);
-    	
-    	// set status to waiting
-    	try {
-    		gitStats.sendStatus(3);
-    	} catch (IOException e2) {
-    		logger.error("Error while trying to send message", e2);
-    	}
     	
         InvocationRequest request = new DefaultInvocationRequest();
         request.setBaseDirectory(new File(Configuration.PATH_TO_GIT + projectId + "/" + repositoryName));
@@ -62,37 +53,15 @@ public class MavenRunner {
                 return true;
             }
             
-            // update status with success message
-            try {
-            	gitStats.sendStatus(1);
-        	} catch (IOException e2) {
-                logger.error("Error while trying to send message", e2);
-            }
             
         } catch (MavenInvocationException e) {
             logger.error("Error while trying to run testes", e);
-            // update status with error message
-            try {
-            	gitStats.sendStatus(4);
-            } catch (IOException e2) {
-                logger.error("Error while trying to send message", e2);
-            }
         } catch (IllegalStateException e) {
             logger.error("Build failed", e);
-            // update status with failure message
-            try {
-            	gitStats.sendStatus(2);
-            } catch (IOException e2) {
-                logger.error("Error while trying to send message", e2);
-            }
+
         } catch (FileNotFoundException e) {
             logger.error("Could not find report file", e);
-            // update status with error message
-            try {
-            	gitStats.sendStatus(4);
-            } catch (IOException e2) {
-                logger.error("Error while trying to send message", e2);
-            }  
         } 
+        return false;
     }
 }

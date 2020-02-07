@@ -121,7 +121,7 @@ public class GitStatusHandler {
             logger.info("Setting build status for commit {} in repository {} to SUCCESS", shaCommit, repository);
         } else if (BuildStatus.FAILURE.equals(buildStatus)) {
             json = buildFailure(json);
-            logger.info("Setting build status for commit {} in repository {} to SUCCESS", shaCommit, repository);
+            logger.info("Setting build status for commit {} in repository {} to FAILURE", shaCommit, repository);
         } else if (BuildStatus.WAITING.equals(buildStatus)) {
             logger.info("Setting build status for commit {} in repository {} to WAITING", shaCommit, repository);
             json = buildWaiting(json);
@@ -129,7 +129,7 @@ public class GitStatusHandler {
             json = buildError(json);
             logger.info("Setting build status for commit {} in repository {} to ERROR", shaCommit, repository);
         } else {
-            logger.error("Error: non existent id for actions (1-3), yours was {}", buildStatus.value);
+            logger.error("Error: non existent id for actions (1-4), yours was {}", buildStatus.value);
             return;
         }
 
