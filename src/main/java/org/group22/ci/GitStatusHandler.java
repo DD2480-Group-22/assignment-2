@@ -135,7 +135,6 @@ public class GitStatusHandler {
 
         try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
             HttpPost request = new HttpPost(createCommitUrl);
-            logger.info(createCommitUrl);
             StringEntity params = new StringEntity(json.toString());
             request.addHeader("content-type", "application/json");
             request.addHeader("Authorization", "token " + Configuration.GITHUB_TOKEN);

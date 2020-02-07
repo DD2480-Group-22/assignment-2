@@ -52,7 +52,8 @@ public class ProjectTester {
     public void processPush() {
         logger.info("Started test of repository: {}, branch: {}, pushed by: {}, id: {}", repositoryName, branch, author, id);
 
-        GitRepositoryHandler gitRepositoryHandler = new GitRepositoryHandler(id, repositoryName, cloneURL);
+
+        GitRepositoryHandler gitRepositoryHandler = new GitRepositoryHandler(id, repositoryName, cloneURL, branch);
         MavenRunner mavenRunner = new MavenRunner(id, repositoryName, author);
         AWSFileUploader awsFileUploader = new AWSFileUploader();
         GitStatusHandler gitStatusHandler = new GitStatusHandler(repositoryName, commitId, author, id);
