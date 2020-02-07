@@ -54,7 +54,7 @@ public class ProjectTester {
 
 
         GitRepositoryHandler gitRepositoryHandler = new GitRepositoryHandler(id, repositoryName, cloneURL, branch);
-        MavenRunner mavenRunner = new MavenRunner(id, repositoryName, author);
+        MavenRunner mavenRunner = new MavenRunner(id, repositoryName);
         AWSFileUploader awsFileUploader = new AWSFileUploader();
         GitStatusHandler gitStatusHandler = new GitStatusHandler(repositoryName, commitId, author, id);
 

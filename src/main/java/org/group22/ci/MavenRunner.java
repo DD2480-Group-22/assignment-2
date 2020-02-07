@@ -13,7 +13,6 @@ public class MavenRunner {
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MavenRunner.class);
     private final String projectId;
     private final String repositoryName;
-    private final String authorName;
     
     /**
      * Creates and initializes a MavenRunner object
@@ -21,10 +20,9 @@ public class MavenRunner {
      * @param id             the id of the build
      * @param repositoryName the name of the repository
      */
-    public MavenRunner(final String id, final String repositoryName, final String author) {
+    public MavenRunner(final String id, final String repositoryName) {
         this.projectId = id;
         this.repositoryName = repositoryName;
-        this.authorName = author;
     }
 
     public boolean runProject() {
@@ -63,6 +61,7 @@ public class MavenRunner {
 
         } catch (FileNotFoundException e) {
             logger.error("Could not find report file", e);
-        } 
+        }
+        return false;
     }
 }
