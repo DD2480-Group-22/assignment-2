@@ -15,7 +15,12 @@
 
 ### Statement of contributions
 ##### Erik Svensson
-* 
+* Results parser
+* HTML genreator for displaying results
+* HTML page for finding the HTML result files
+* CSS used by HTML files
+* Helped make a few of the tests for the Helpers functions
+
 
 ##### Felipe Ignacio Vicencio Neumann
 * 
