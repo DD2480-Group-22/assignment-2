@@ -121,24 +121,26 @@ public class GitStatusHandler {
         json.put("target_url", Helpers.reportAddressHTML(buildId));
         json.put("context", "Group-22-CI");
 
-        if (BuildStatus.FINISHED.equals(buildStatus)) {
-            json = buildResults(mvnResults, json);
-            logger.info("Setting build status for commit {} in repository {} to FINISHED with status " +
-                    (mvnResults ? "succeeded" : "failed"), shaCommit, repository);
-        } else if (BuildStatus.WAITING.equals(buildStatus)) {
-            logger.info("Setting build status for commit {} in repository {} to WAINING", shaCommit, repository);
-            json = buildWaiting(json);
-        } else if (BuildStatus.ERROR.equals(buildStatus)) {
-            json = buildError(json);
-            logger.info("Setting build status for commit {} in repository {} to ERROR", shaCommit, repository);
-        } else {
-            logger.error("Error: non existent id for actions (1-3), yours was {}", buildStatus.value);
-            return;
+        switch (buildStatus) {
+            case ERROR:
+                json = buildError(json);
+                logger.info("Setting build status for commit {} in repository {} to ERROR", shaCommit, repository);
+                break;
+            case FINISHED:
+                json = buildResults(mvnResults, json);
+                logger.info("Setting build status for commit {} in repository {} to FINISHED with status {}", shaCommit, repository, (mvnResults ? "succeeded" : "failed"));
+                break;
+            case WAITING:
+                logger.info("Setting build status for commit {} in repository {} to WAINING", shaCommit, repository);
+                json = buildWaiting(json);
+                break;
+            default:
+                logger.error("Error: non existent id for actions (1-3), yours was {}", buildStatus.value);
+                return;
         }
 
         try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
             HttpPost request = new HttpPost(createCommitUrl);
-            logger.info(createCommitUrl);
             StringEntity params = new StringEntity(json.toString());
             request.addHeader("content-type", "application/json");
             request.addHeader("Authorization", "token " + Configuration.GITHUB_TOKEN);
