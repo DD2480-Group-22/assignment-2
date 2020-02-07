@@ -67,48 +67,43 @@ public class GitStatusHandler {
     }
 
     /**
-     * Function to create the the status of the build to the repo using the Git Status API.
+     * Function used internally by {@code sendStatus} to set the status to "success" if the project build goes well.
      *
-     * @param mavenResult: the building results as a boolean, where {@code true} represents a successful build, and
-     *                     {@code false} the opposite.
-     * @param partialJson: {@code JSONObject} containing part of the necessary fields for a successful API
-     *                     communication.
-     * @return partialJson: {@code JSONObject} containing the necessary data to interact with the API with only 2
-     * values, either success or failure.
+     * @param partialJson: {@code JSONObject} containing part of the necessary fields for a successful API communication.
+     * @return partialJson: {@code JSONObject} containing the necessary data to interact with the API.
      */
     @NotNull
-    @Contract("_, _ -> param2")
-    private JSONObject buildResults(boolean mavenResult, JSONObject partialJson) {
-        if (mavenResult) {
-            partialJson.put(STATE, "success");
-            partialJson.put(DESCRIPTION, "The build succeeded!");
-        } else {
-            partialJson.put(STATE, "failure");
-            partialJson.put(DESCRIPTION, "The build failed!");
-        }
+    @Contract("_-> param1")
+    private JSONObject buildSuccess(@NotNull JSONObject partialJson) {
+        partialJson.put(STATE, "success");
+        partialJson.put(DESCRIPTION, "The build succeeded!");
+        
+        return partialJson;
+    }
+    
+    /**
+     * Function used internally by {@code sendStatus} to set the status to "failure" if the project build fails.
+     *
+     * @param partialJson: {@code JSONObject} containing part of the necessary fields for a successful API communication.
+     * @return partialJson: {@code JSONObject} containing the necessary data to interact with the API.
+     */
+    @NotNull
+    @Contract("_ -> param1")
+    private JSONObject buildFailure(@NotNull JSONObject partialJson) {
+        partialJson.put(STATE, "failure");
+        partialJson.put(DESCRIPTION, "The build failed!");
 
         return partialJson;
     }
 
-    /**
-     * General function to interact with the REST Git Status API.
-     *
-     * @param buildStatus {@code BuildStatus} representing one of the three possible states of the project build
-     *                    (ERROR, FINISHED and WAITING).
-     */
-    public void sendStatus(BuildStatus buildStatus) {
-        sendStatus(buildStatus, false);
-    }
 
     /**
      * General function to interact with the REST Git Status API.
      *
      * @param buildStatus: {@code BuildStatus} representing one of the three possible states of the project build
-     *                     (ERROR, FINISHED and WAITING).
-     * @param mvnResults:  Representing the result of the project build, only used when calling the function with
-     *                     {@code BuildStatus} {@code FINISHED}
+     *                     (SUCCESS, FAILURE, ERROR,and WAITING).
      */
-    public void sendStatus(BuildStatus buildStatus, boolean mvnResults) {
+    public void sendStatus(BuildStatus buildStatus) {
         if ("".equals(shaCommit)) {
             logger.error("Error: tried to change the status of a commit without specifying an id!");
             throw new IllegalArgumentException("The sha for the head commit was not set");
@@ -121,24 +116,25 @@ public class GitStatusHandler {
         json.put("target_url", Helpers.reportAddressHTML(buildId));
         json.put("context", "Group-22-CI");
 
-        if (BuildStatus.FINISHED.equals(buildStatus)) {
-            json = buildResults(mvnResults, json);
-            logger.info("Setting build status for commit {} in repository {} to FINISHED with status " +
-                    (mvnResults ? "succeeded" : "failed"), shaCommit, repository);
+        if (BuildStatus.SUCCESS.equals(buildStatus)) {
+            json = buildSuccess(json);
+            logger.info("Setting build status for commit {} in repository {} to SUCCESS", shaCommit, repository);
+        } else if (BuildStatus.FAILURE.equals(buildStatus)) {
+            json = buildFailure(json);
+            logger.info("Setting build status for commit {} in repository {} to FAILURE", shaCommit, repository);
         } else if (BuildStatus.WAITING.equals(buildStatus)) {
-            logger.info("Setting build status for commit {} in repository {} to WAINING", shaCommit, repository);
+            logger.info("Setting build status for commit {} in repository {} to WAITING", shaCommit, repository);
             json = buildWaiting(json);
         } else if (BuildStatus.ERROR.equals(buildStatus)) {
             json = buildError(json);
             logger.info("Setting build status for commit {} in repository {} to ERROR", shaCommit, repository);
         } else {
-            logger.error("Error: non existent id for actions (1-3), yours was {}", buildStatus.value);
+            logger.error("Error: non existent id for actions (1-4), yours was {}", buildStatus.value);
             return;
         }
 
         try (CloseableHttpClient httpClient = HttpClientBuilder.create().build()) {
             HttpPost request = new HttpPost(createCommitUrl);
-            logger.info(createCommitUrl);
             StringEntity params = new StringEntity(json.toString());
             request.addHeader("content-type", "application/json");
             request.addHeader("Authorization", "token " + Configuration.GITHUB_TOKEN);
@@ -154,9 +150,10 @@ public class GitStatusHandler {
      * Enum class holding {@code Integers} representing the status of the build of that is being tested.
      */
     public enum BuildStatus {
-        FINISHED(1),
-        WAITING(2),
-        ERROR(3);
+        SUCCESS(1),
+        FAILURE(2),
+        WAITING(3),
+        ERROR(4);
 
         final int value;
 
