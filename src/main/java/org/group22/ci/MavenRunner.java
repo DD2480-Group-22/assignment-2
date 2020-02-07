@@ -13,7 +13,7 @@ public class MavenRunner {
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(MavenRunner.class);
     private final String projectId;
     private final String repositoryName;
-
+    
     /**
      * Creates and initializes a MavenRunner object
      *
@@ -25,7 +25,9 @@ public class MavenRunner {
         this.repositoryName = repositoryName;
     }
 
-    public void runProject() {
+    public boolean runProject() {
+    	
+    	
         InvocationRequest request = new DefaultInvocationRequest();
         request.setBaseDirectory(new File(Configuration.PATH_TO_GIT + projectId + "/" + repositoryName));
         request.setGoals(Collections.singletonList("test"));
@@ -33,7 +35,7 @@ public class MavenRunner {
 
         Invoker invoker = new DefaultInvoker();
         invoker.setMavenHome(new File(Configuration.M3_HOME));
-
+        
         try {
             logger.info("Running test for Maven project in repository: {}", repositoryName);
 
@@ -45,15 +47,21 @@ public class MavenRunner {
 
             InvocationResult result = invoker.execute(request);
 
-            if (result.getExitCode() != 0) {
-                throw new IllegalStateException("Build failed");
-            }
+
+            final int exitCode = result.getExitCode();
+
+            logger.info("Test of build {} exited with code {}", projectId, exitCode);
+
+            return exitCode == 0;
+
         } catch (MavenInvocationException e) {
             logger.error("Error while trying to run testes", e);
         } catch (IllegalStateException e) {
             logger.error("Build failed", e);
+
         } catch (FileNotFoundException e) {
             logger.error("Could not find report file", e);
         }
+        return false;
     }
 }

@@ -7,12 +7,11 @@ import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import java.io.*;
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Helpers {
     private static final org.slf4j.Logger logger = org.slf4j.LoggerFactory.getLogger(Helpers.class);
@@ -39,8 +38,9 @@ public class Helpers {
      * @return {@code true} if the requirements are meet, {@code false} otherwise
      */
     public static boolean isPushEvent(@NotNull JSONObject jsonObject) {
-        if (jsonObject.has("head_commit")) {
-            return jsonObject.getJSONObject("head_commit").get("id") != null;
+        final String headCommit = "head_commit";
+        if (jsonObject.has(headCommit)) {
+            return jsonObject.getJSONObject(headCommit).get("id") != null;
         }
         return false;
     }
@@ -154,32 +154,25 @@ public class Helpers {
      *
      * @param fileName The name of the file containing the Maven output
      * @return {@code Result} object
-     * @throws FileNotFoundException If couldn't find report file
+     * @throws FileNotFoundException If the method couldn't find the report file
+     * @throws ParseException        If the method couldn't parse the correct values from the file
      */
     @NotNull
     @Contract("_ -> new")
-    private static Result parseResultFile(final String fileName) throws FileNotFoundException {
+    private static Result parseResultFile(final String fileName) throws ParseException, FileNotFoundException {
         Scanner textScanner = new Scanner(new File(Configuration.PATH_TO_REPORTS + fileName + ".txt"));
 
-        int testsRun = 0;
-        int failures = 0;
-        int errors = 0;
-        int skipped = 0;
-
-        // Fetch all the relevant results
+        boolean resultSection = false;
         while (textScanner.hasNextLine()) {
-            String textLine = textScanner.nextLine().substring(7);
-            if (textLine.contains("Tests run")) {
-                String[] numbers = textLine.split(",");
-                testsRun += Integer.parseInt(numbers[0].split(":")[1].substring(1));
-                failures += Integer.parseInt(numbers[1].split(":")[1].substring(1));
-                errors += Integer.parseInt(numbers[2].split(":")[1].substring(1));
-                skipped += Integer.parseInt(numbers[3].split(":")[1].substring(1));
+            final String line = textScanner.nextLine();
+            if (line.contains("[INFO] Results:")) {
+                resultSection = true;
+            } else if (resultSection && (line.contains("[ERROR] Tests run:") || line.contains("[INFO] Tests run:"))) {
+                return parseLine(line);
             }
         }
         textScanner.close();
-
-        return new Result(testsRun, failures, errors, skipped);
+        throw new ParseException("Couldn't parse Maven result file", 0);
     }
 
 
@@ -190,7 +183,7 @@ public class Helpers {
      * @param fileName The name of the file containing the Maven test result
      * @throws IOException If there was an issue reading or writing to file
      */
-    public static void txtToHTMLFile(final String fileName) throws IOException {
+    public static void txtToHTMLFile(final String fileName) throws IOException, ParseException {
         final Result result = parseResultFile(fileName);
         final InputStream inputStream = Helpers.class.getClassLoader().getResourceAsStream("HTML/template.html");
         final Scanner htmlScanner;
@@ -237,7 +230,7 @@ public class Helpers {
         for (String id : Configuration.PREVIOUS_BUILDS) {
             stringBuilderList.append("<li>");
             stringBuilderList.append("<a href=\"");
-            stringBuilderList.append(reportAddress(id));
+            stringBuilderList.append(reportAddressHTML(id));
             stringBuilderList.append("\">");
             stringBuilderList.append(id);
             stringBuilderList.append("</a>");
@@ -251,7 +244,8 @@ public class Helpers {
     }
 
     /**
-     * Creates the URL to a report stored on AWS.
+     * Generates a {@code String} containing the URL for the text version of the build report specified by the {@code id}
+     * variable.
      *
      * @param id The id of the report
      * @return The URL to the report
@@ -259,8 +253,53 @@ public class Helpers {
     @NotNull
     @Contract(pure = true)
     public static String reportAddress(final String id) {
+        return getAddress(id, "reports") + ".txt";
+    }
+
+    /**
+     * Generates a {@code String} containing the URL for the HTML version of the build report specified by the {@code id}
+     * variable.
+     *
+     * @param id The id of the report
+     * @return The URL to the report
+     */
+    @NotNull
+    @Contract(pure = true)
+    public static String reportAddressHTML(final String id) {
+        return getAddress(id, "reports_html") + ".html";
+    }
+
+    /**
+     * Generates a {@code String} containing the URL to the report specified by the {@code id} variable, and in the
+     * folder set by the {@code folder} variable. The URL doesn't congaing the file type of the given report.
+     *
+     * @param id     The id of the report
+     * @param folder The folder the report is in
+     * @return The URL to the report, without file type
+     */
+    @NotNull
+    @Contract(pure = true)
+    private static String getAddress(final String id, final String folder) {
         return "https://" + Configuration.BUCKET_NAME + ".s3." +
-                Configuration.S3_BUCKET_REGION + ".amazonaws.com/reports/" + id + ".txt";
+                Configuration.S3_BUCKET_REGION + ".amazonaws.com/" + folder + "/" + id;
+    }
+
+    /**
+     * Extracts {@code Integers} from a String.
+     *
+     * @param line The {@code String} being parsed
+     * @return New
+     */
+    @NotNull
+    @Contract("_ -> new")
+    private static Helpers.Result parseLine(@NotNull final String line) {
+        List<Integer> numbers = Arrays.stream(line.replace(",", "").split(" "))
+                .filter(s -> s.matches("\\d+"))
+                .mapToInt(Integer::parseInt)
+                .boxed()
+                .collect(Collectors.toList());
+
+        return new Helpers.Result(numbers);
     }
 
     /**
@@ -293,7 +332,7 @@ public class Helpers {
     /**
      * Helper class for storing the values parsed from Maven result file.
      */
-    private static class Result {
+    public static class Result {
         private final int testRun;
         private final int failures;
         private final int errors;
@@ -304,6 +343,13 @@ public class Helpers {
             this.failures = failures;
             this.errors = errors;
             this.skipped = skipped;
+        }
+
+        public Result(@NotNull final List<Integer> list) {
+            this.testRun = list.get(0);
+            this.failures = list.get(1);
+            this.errors = list.get(2);
+            this.skipped = list.get(3);
         }
 
         /**

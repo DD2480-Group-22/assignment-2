@@ -1,5 +1,6 @@
 package org.group22.ci;
 
+import org.group22.ci.GitStatusHandler.BuildStatus;
 import org.group22.utilities.Helpers;
 import org.json.JSONObject;
 
@@ -9,6 +10,7 @@ public class ProjectTester {
     private final String branch;
     private final String author;
     private final String id;
+    private final String commitId;
     private final String repositoryName;
     private final String cloneURL;
 
@@ -18,12 +20,12 @@ public class ProjectTester {
      * @param jsonObject the payload from the Github POST request
      */
     public ProjectTester(JSONObject jsonObject) {
-        id = Helpers.generateId(Helpers.getHeadCommitId(jsonObject));
+        commitId = Helpers.getHeadCommitId(jsonObject);
+        id = Helpers.generateId(commitId);
         branch = Helpers.getBranch(jsonObject);
         author = Helpers.getAuthor(jsonObject);
         repositoryName = Helpers.getRepositoryName(jsonObject);
         cloneURL = Helpers.getCloneURL(jsonObject);
-        logger.info("Started test of repository: {}, branch: {}, pushed by: {}, id: {}", repositoryName, branch, author, Helpers.getHeadCommitId(jsonObject));
     }
 
     /**
@@ -41,6 +43,7 @@ public class ProjectTester {
         this.author = author;
         this.cloneURL = cloneURL;
         id = Helpers.generateId(headCommitId);
+        this.commitId = headCommitId;
     }
 
     /**
@@ -49,17 +52,29 @@ public class ProjectTester {
     public void processPush() {
         logger.info("Started test of repository: {}, branch: {}, pushed by: {}, id: {}", repositoryName, branch, author, id);
 
-        GitRepositoryHandler gitRepositoryHandler = new GitRepositoryHandler(id, repositoryName, cloneURL);
+
+        GitRepositoryHandler gitRepositoryHandler = new GitRepositoryHandler(id, repositoryName, cloneURL, branch);
         MavenRunner mavenRunner = new MavenRunner(id, repositoryName);
         AWSFileUploader awsFileUploader = new AWSFileUploader();
+        GitStatusHandler gitStatusHandler = new GitStatusHandler(repositoryName, commitId, author, id);
 
+        gitStatusHandler.sendStatus(BuildStatus.WAITING);
         boolean cloned = gitRepositoryHandler.cloneRepository();
 
         if (cloned) {
-            mavenRunner.runProject();
+            final boolean buildResult = mavenRunner.runProject();
+            
+            if (buildResult) {
+            	gitStatusHandler.sendStatus(BuildStatus.SUCCESS);
+            } else {
+            	gitStatusHandler.sendStatus(BuildStatus.FAILURE);
+            }
+            
             awsFileUploader.upload(id);
+            
+        } else {
+            gitStatusHandler.sendStatus(BuildStatus.ERROR);
         }
-
 
         Helpers.cleanUp(id);
     }
