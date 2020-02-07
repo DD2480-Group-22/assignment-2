@@ -11,7 +11,7 @@ The CI-server is the second assignment in the course DD2480 Software Engineering
 written by group 22.
 
 ## Statement of Contributions
-  * Nils Streijffert: Setup tests of projects, pull repository from Github, upload to S3 bucket, Docker and deployment.
+  * Nils Streijffert: Setup tests of projects, setup server, pull repository from Github, upload to S3 bucket, Docker and deployment.
 
 ## Configuration
 ### Requirements for development
