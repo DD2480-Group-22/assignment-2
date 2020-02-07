@@ -68,12 +68,12 @@ public class ContinuousIntegrationServer extends AbstractHandler {
      * @param response The response
      * @throws IOException If something goes wrong while parsing the request or sending the response
      */
-    private void handleGetRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, final String target) throws IOException {
+    private void handleGetRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull final String target) throws IOException {
         try {
             if (target.matches("/reports/[a-z0-9_-]+")) {
                 final String reportId = request.getRequestURI().replace("/reports/", "");
                 if (Configuration.PREVIOUS_BUILDS.contains(reportId)) {
-                    final String reportURL = Helpers.reportAddress(reportId);
+                    final String reportURL = Helpers.reportAddressHTML(reportId);
                     response.sendRedirect(reportURL);
                     logger.info("Served build report for build with id: {}", reportId);
                 } else {
