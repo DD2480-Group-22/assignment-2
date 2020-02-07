@@ -37,7 +37,7 @@ target
 git
 reports
 log
-
+reports_html
 .DS_Store
 
 # HTML generator test files
