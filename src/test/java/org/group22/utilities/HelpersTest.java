@@ -40,6 +40,22 @@ public class HelpersTest {
 	}
 
 	@Nested
+	@DisplayName("Tests the isPushEvent function")
+	class isPushEventTest {
+		@Test
+		@DisplayName("Basic test")
+		void basicTest() {
+			JSONObject json = new JSONObject();
+			JSONObject id   = new JSONObject();
+			id.put("id", "id");
+			json.put("head_commit", id); 
+        	assertTrue(Helpers.isPushEvent(json));
+        	assertFalse(Helpers.isPushEvent(id));
+		}
+	}
+
+
+	@Nested
 	@DisplayName("Tests the getHeadCommitId function")
 	class getHeadCommitIdTest {
 		@Test
@@ -123,7 +139,7 @@ public class HelpersTest {
 	}
 
 	@Nested
-	@DisplayName("Tests the clean up function")
+	@DisplayName("Tests the updatePreviousBuilds function")
 	class updatePreviousBuildsTest {
 		@Test
 		@DisplayName("Basic test")
