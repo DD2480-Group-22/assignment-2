@@ -1,5 +1,8 @@
 package org.group22.utilities;
 
+import org.group22.ci.AWSFileUploader;
+import org.group22.utilities.Configuration;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -7,7 +10,8 @@ import org.junit.jupiter.api.Test;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import org.json.JSONObject;
-import java.util.MissingResourceException;
+import java.util.*;
+import java.io.File;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -114,6 +118,65 @@ public class HelpersTest {
         	assertThrows(MissingResourceException.class, () -> {Helpers.setUpConfiguration(args1);});
         	assertThrows(IllegalArgumentException.class, () -> {Helpers.setUpConfiguration(args2);});
         	assertThrows(IllegalArgumentException.class, () -> {Helpers.setUpConfiguration(args3);});
+		}
+	}
+
+	@Nested
+	@DisplayName("Tests the clean up function")
+	class updatePreviousBuildsTest {
+		@Test
+		@DisplayName("Basic test")
+		void basicTest() {
+			Set<String> set = new HashSet();
+			String id = "id";
+			set.add(id);
+			Helpers.updatePreviousBuilds("id");
+			assertEquals(set, Configuration.PREVIOUS_BUILDS);
+		}
+	}
+
+	@Nested
+	@DisplayName("Tests the clean up function")
+	class cleanUpTest {
+		@Test
+		@DisplayName("Basic test")
+		void basicTest() {
+			String fName = Configuration.PATH_TO_GIT + "id";
+			assertTrue(Helpers.cleanUp("id"));
+		}
+	}
+	
+	@Nested
+	@DisplayName("Tests the generate index function")
+	class generateIndexTest {
+		@Test
+		@DisplayName("Basic test")
+		void basicTest() {
+			StringBuilder stringBuilderList = new StringBuilder();
+	        stringBuilderList.append("<!DOCTYPE html> <html lang=\"en\">");
+	        stringBuilderList.append("<head>" + "<meta charset=\"UTF-8\">" + "<title>CI Server</title>" + "</head>");
+	        stringBuilderList.append("<body>");
+	        stringBuilderList.append("<h1>Index Group 22 - CI Server</h1>");
+	        stringBuilderList.append("<h2>List of previous builds on the CI server</h2>");
+	        stringBuilderList.append("<ul>");
+	        stringBuilderList.append("</ul>");
+	        stringBuilderList.append("</body>");
+	        stringBuilderList.append("</html>");
+	        String test = stringBuilderList.toString();
+			assertEquals(test, Helpers.generateIndex());
+
+		}
+	}
+
+	@Nested
+	@DisplayName("Tests the reportAddress function")
+	class reportAdressTest {
+		@Test
+		@DisplayName("Basic test")
+		void basicTest() {
+			String test_string = "https://" + Configuration.BUCKET_NAME + ".s3." +
+                Configuration.S3_BUCKET_REGION + ".amazonaws.com/reports/test_id.txt"; 
+        	assertEquals(test_string, Helpers.reportAddress("test_id"));
 		}
 	}
 }
