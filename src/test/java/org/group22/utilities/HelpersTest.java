@@ -1,6 +1,8 @@
 package org.group22.utilities;
 
+
 import org.group22.ci.AWSFileUploader;
+
 import org.group22.utilities.Configuration;
 
 import org.junit.jupiter.api.DisplayName;
@@ -11,12 +13,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import org.json.JSONObject;
 import java.util.*;
+
 import java.io.File;
-import java.nio.file.Files;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.awt.geom.Point2D;
+import java.io.File;
+import java.nio.file.Files;
+
 
 public class HelpersTest {
 	@Nested
