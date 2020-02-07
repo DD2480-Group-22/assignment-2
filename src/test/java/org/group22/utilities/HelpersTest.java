@@ -10,6 +10,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import org.json.JSONObject;
 import java.util.*;
+<<<<<<< HEAD
+=======
+import java.io.File;
+import java.nio.file.Files;
+>>>>>>> e220fba66a4b4e7e5fa6da8665dfadb1d58afff2
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -147,6 +152,24 @@ public class HelpersTest {
 		}
 	}
 
+	@Nested
+	@DisplayName("Tests the clean up function")
+	class cleanUpTest {
+		@Test
+		@DisplayName("Basic test")
+		void basicTest() {
+			String id = "folder_with_stuff";
+			
+			File directory = new File("git/"+id);
+			directory.mkdirs();
+			
+			assertTrue(directory.exists());
+			
+			Helpers.cleanUp(id);
+			
+			assertFalse(directory.exists());
+		}
+	}
 	
 	@Nested
 	@DisplayName("Tests the generate index function")
