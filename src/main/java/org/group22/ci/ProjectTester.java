@@ -1,5 +1,6 @@
 package org.group22.ci;
 
+import org.group22.ci.GitStatusHandler.BuildStatus;
 import org.group22.utilities.Helpers;
 import org.json.JSONObject;
 
@@ -9,12 +10,9 @@ public class ProjectTester {
     private final String branch;
     private final String author;
     private final String id;
+    private final String commitId;
     private final String repositoryName;
     private final String cloneURL;
-    private boolean cloned = false;
-    private boolean tested = false;
-    private boolean reportSaved = false;
-    private boolean cleanedUp = false;
 
     /**
      * Creates and initializes a ProjectTester object.
@@ -22,12 +20,12 @@ public class ProjectTester {
      * @param jsonObject the payload from the Github POST request
      */
     public ProjectTester(JSONObject jsonObject) {
-        id = Helpers.generateId(Helpers.getHeadCommitId(jsonObject));
+        commitId = Helpers.getHeadCommitId(jsonObject);
+        id = Helpers.generateId(commitId);
         branch = Helpers.getBranch(jsonObject);
         author = Helpers.getAuthor(jsonObject);
         repositoryName = Helpers.getRepositoryName(jsonObject);
         cloneURL = Helpers.getCloneURL(jsonObject);
-        logger.info("Started test of repository: {}, branch: {}, pushed by: {}, id: {}", repositoryName, branch, author, Helpers.getHeadCommitId(jsonObject));
     }
 
     /**
@@ -45,6 +43,7 @@ public class ProjectTester {
         this.author = author;
         this.cloneURL = cloneURL;
         id = Helpers.generateId(headCommitId);
+        this.commitId = headCommitId;
     }
 
     /**
@@ -53,20 +52,20 @@ public class ProjectTester {
     public void processPush() {
         logger.info("Started test of repository: {}, branch: {}, pushed by: {}, id: {}", repositoryName, branch, author, id);
 
-        GitRepositoryHandler gitRepositoryHandler = new GitRepositoryHandler(id, repositoryName, cloneURL);
+        GitRepositoryHandler gitRepositoryHandler = new GitRepositoryHandler(id, repositoryName, cloneURL, branch);
         MavenRunner mavenRunner = new MavenRunner(id, repositoryName);
         AWSFileUploader awsFileUploader = new AWSFileUploader();
+        GitStatusHandler gitStatusHandler = new GitStatusHandler(repositoryName, commitId, author, id);
 
-        for (int i = 0; i < 3 && !cloned; i++) {
-            cloned = gitRepositoryHandler.cloneRepository();
-        }
+        gitStatusHandler.sendStatus(BuildStatus.WAITING, false);
+        boolean cloned = gitRepositoryHandler.cloneRepository();
 
-        for (int i = 0; i < 3 && cloned && !tested; i++) {
-            tested = mavenRunner.runProject();
-        }
-
-        for (int i = 0; i < 3 && !reportSaved; i++) {
-            reportSaved = awsFileUploader.uploadFile(id);
+        if (cloned) {
+            final boolean buildResult = mavenRunner.runProject();
+            gitStatusHandler.sendStatus(BuildStatus.FINISHED, buildResult);
+            awsFileUploader.upload(id);
+        } else {
+            gitStatusHandler.sendStatus(BuildStatus.ERROR, false);
         }
 
         Helpers.cleanUp(id);

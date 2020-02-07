@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<meta charset="UTF-8">
+<style>
+    h1 {
+        margin-top: 100px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .result {
+        float: left;
+        margin: auto;
+    }
+
+    .pillar {
+        width: 20px;
+        background-color: red;
+    }
+
+    .result_container {
+        width: 50%;
+        margin-top: 10px;
+        margin-left: auto;
+        margin-right: auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    #tests {
+        background-color: green;
+    }
+
+    #fails {
+        background-color: orange;
+    }
+
+    #errors {
+        background-color: red;
+    }
+
+    #skip {
+        background-color: grey;
+    }
+</style>
+
+<head>
+    <title>Results</title>
+</head>
+
+<body>
+<h1>The Results</h1>
+
+<div class="result_container">
+    <div class="result pillar" id="tests" style="height:[trHeight]px;"></div>
+    <div class="result pillar" id="fails" style="height:[flHeight]px;"></div>
+    <div class="result pillar" id="errors" style="height:[erHeight]px;"></div>
+    <div class="result pillar" id="skip" style="height:[skHeight]px;"></div>
+</div>
+
+<div class="result_container">
+    <div class="result">Tests run: [tr]</div>
+    <div class="result">Failures: [fl]</div>
+    <div class="result">Errors: [er]</div>
+    <div class="result">Skipped: [sk]</div>
+</div>
+</body>
+
+</html>

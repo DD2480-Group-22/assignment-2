@@ -42,18 +42,22 @@ public class ContinuousIntegrationServer extends AbstractHandler {
      * @throws IOException If something goes wring while parsing the response
      */
     @Override
-    public void handle(String target, @NotNull Request baseRequest, @NotNull HttpServletRequest request, @NotNull HttpServletResponse response)
-            throws IOException {
-        response.setContentType("text/html;charset=utf-8");
-        response.setStatus(HttpServletResponse.SC_OK);
-        baseRequest.setHandled(true);
-        if ("GET".equalsIgnoreCase(request.getMethod())) {
-            handleGetRequest(request, response);
-        } else if ("POST".equalsIgnoreCase(request.getMethod())) {
-            handlePostRequest(request, response);
-        }
-    }
+    public void handle(String target, @NotNull Request baseRequest, @NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws IOException {
+        try {
+            response.setContentType("text/html;charset=utf-8");
+            baseRequest.setHandled(true);
 
+            if ("GET".equalsIgnoreCase(request.getMethod())) {
+                handleGetRequest(request, response, target);
+            } else if ("POST".equalsIgnoreCase(request.getMethod())) {
+                handlePostRequest(request, response);
+            }
+        } catch (IOException e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Something went wrong while handling request");
+            logger.error("Something went wrong while handling request", e);
+        }
+
+    }
 
     /**
      * Handles {@code GET} requests that are sent to the server. If the URL query string contains a id of a generated report the
@@ -64,20 +68,27 @@ public class ContinuousIntegrationServer extends AbstractHandler {
      * @param response The response
      * @throws IOException If something goes wrong while parsing the request or sending the response
      */
-    private void handleGetRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) throws IOException {
-        if (request.getRequestURI().matches("/reports/[a-z0-9_-]+")) {
-            final String reportId = request.getRequestURI().replace("/reports/", "");
-            logger.info("Request for build report for id: {}", reportId);
-            if (Configuration.PREVIOUS_BUILDS.contains(reportId)) {
-                final String reportURL = Helpers.reportAddress(reportId);
-                response.sendRedirect(reportURL);
-                return;
+    private void handleGetRequest(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response, @NotNull final String target) throws IOException {
+        try {
+            if (target.matches("/reports/[a-z0-9_-]+")) {
+                final String reportId = request.getRequestURI().replace("/reports/", "");
+                if (Configuration.PREVIOUS_BUILDS.contains(reportId)) {
+                    final String reportURL = Helpers.reportAddressHTML(reportId);
+                    response.sendRedirect(reportURL);
+                    logger.info("Served build report for build with id: {}", reportId);
+                } else {
+                    logger.warn("URL for non-existing report was requested, id: {}", reportId);
+                }
             } else {
-                logger.info("URL for non-existing report was requested, id: {}", reportId);
+                logger.warn("GET request with no matching target was received, target: {}", target);
             }
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().println(Helpers.generateIndex());
+            response.getWriter().flush();
+        } catch (IOException e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Something went wrong while handling GET request");
+            logger.error("Server failed to write response to GET request", e);
         }
-        response.getWriter().println(Helpers.generateIndex());
-        response.getWriter().flush();
     }
 
     /**
@@ -92,11 +103,19 @@ public class ContinuousIntegrationServer extends AbstractHandler {
         String payload = IOUtils.toString(request.getReader());
         try {
             JSONObject jsonObject = new JSONObject(payload);
-            ProjectTester projectTester = new ProjectTester(jsonObject);
-            projectTester.processPush();
+            if (Helpers.isPushEvent(jsonObject)) {
+                ProjectTester projectTester = new ProjectTester(jsonObject);
+                projectTester.processPush();
+                response.setStatus(HttpServletResponse.SC_OK);
+                response.getWriter().println("CI job running");
+                logger.info("Successfully handled POST request");
+            } else {
+                logger.info("Received POST request with invalid JSON object");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Post request most contain a head commit");
+            }
         } catch (JSONException e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Something went wrong while handling POST request");
             logger.error("Server failed while parsing received payload", e);
         }
-        response.getWriter().println("CI job running");
     }
 }
