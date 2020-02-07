@@ -12,6 +12,7 @@ import java.time.format.DateTimeFormatter;
 import org.json.JSONObject;
 import java.util.*;
 import java.io.File;
+import java.nio.file.Files;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -141,8 +142,16 @@ public class HelpersTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
-			String fName = Configuration.PATH_TO_GIT + "id";
-			assertTrue(Helpers.cleanUp("id"));
+			String id = "folder_with_stuff";
+			
+			File directory = new File("git/"+id);
+			directory.mkdirs();
+			
+			assertTrue(directory.exists());
+			
+			Helpers.cleanUp(id);
+			
+			assertFalse(directory.exists());
 		}
 	}
 	
