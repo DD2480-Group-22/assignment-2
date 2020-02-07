@@ -14,4 +14,5 @@ public class Configuration {
     public static final String PATH_TO_RESOURCES = "./";
     public static final String PATH_TO_GIT = PATH_TO_RESOURCES + "git/";
     public static final String PATH_TO_REPORTS = PATH_TO_RESOURCES + "reports/";
+    public static final String PATH_TO_REPORTS_HTML = PATH_TO_RESOURCES + "reports_html/";
 }
