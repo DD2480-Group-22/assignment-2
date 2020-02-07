@@ -237,7 +237,7 @@ public class Helpers {
         for (String id : Configuration.PREVIOUS_BUILDS) {
             stringBuilderList.append("<li>");
             stringBuilderList.append("<a href=\"");
-            stringBuilderList.append(reportAddress(id));
+            stringBuilderList.append(reportAddressHTML(id));
             stringBuilderList.append("\">");
             stringBuilderList.append(id);
             stringBuilderList.append("</a>");
@@ -251,7 +251,8 @@ public class Helpers {
     }
 
     /**
-     * Creates the URL to a report stored on AWS.
+     * Generates a {@code String} containing the URL for the text version of the build report specified by the {@code id}
+     * variable.
      *
      * @param id The id of the report
      * @return The URL to the report
@@ -259,8 +260,35 @@ public class Helpers {
     @NotNull
     @Contract(pure = true)
     public static String reportAddress(final String id) {
+        return getAddress(id, "reports") + ".txt";
+    }
+
+    /**
+     * Generates a {@code String} containing the URL for the HTML version of the build report specified by the {@code id}
+     * variable.
+     *
+     * @param id The id of the report
+     * @return The URL to the report
+     */
+    @NotNull
+    @Contract(pure = true)
+    public static String reportAddressHTML(final String id) {
+        return getAddress(id, "reports_html") + ".html";
+    }
+
+    /**
+     * Generates a {@code String} containing the URL to the report specified by the {@code id} variable, and in the
+     * folder set by the {@code folder} variable. The URL doesn't congaing the file type of the given report.
+     *
+     * @param id     The id of the report
+     * @param folder The folder the report is in
+     * @return The URL to the report, without file type
+     */
+    @NotNull
+    @Contract(pure = true)
+    private static String getAddress(final String id, final String folder) {
         return "https://" + Configuration.BUCKET_NAME + ".s3." +
-                Configuration.S3_BUCKET_REGION + ".amazonaws.com/reports/" + id + ".txt";
+                Configuration.S3_BUCKET_REGION + ".amazonaws.com/" + folder + "/" + id;
     }
 
     /**

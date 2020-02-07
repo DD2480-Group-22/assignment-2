@@ -61,6 +61,7 @@ public class AWSFileUploader {
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType("plain/html");
             metadata.addUserMetadata("x-amz-meta-title", fileName);
+            metadata.setContentDisposition("inline");
             request.setMetadata(metadata);
             s3Client.putObject(request);
             Helpers.updatePreviousBuilds(fileName);
