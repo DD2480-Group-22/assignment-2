@@ -1,5 +1,8 @@
 package org.group22.utilities;
 
+
+import org.group22.ci.AWSFileUploader;
+
 import org.group22.utilities.Configuration;
 
 import org.junit.jupiter.api.DisplayName;
@@ -15,6 +18,10 @@ import java.io.File;
 
 
 import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.File;
+import java.nio.file.Files;
+
 
 public class HelpersTest {
 	@Nested
@@ -55,7 +62,7 @@ public class HelpersTest {
 
 	@Nested
 	@DisplayName("Tests the getHeadCommitId function")
-	class GetHeadCommitIdTest {
+	class getHeadCommitIdTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
@@ -69,7 +76,7 @@ public class HelpersTest {
 
 	@Nested
 	@DisplayName("Tests the get Branch function")
-	class GetBranchTest {
+	class getBranchTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
@@ -81,7 +88,7 @@ public class HelpersTest {
 
 	@Nested
 	@DisplayName("Tests the get Author function")
-	class GetAuthorTest {
+	class getAuthorTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
@@ -95,7 +102,7 @@ public class HelpersTest {
 
 	@Nested
 	@DisplayName("Tests the get Repository Name function")
-	class GetRepositoryNameTest {
+	class geRepositoryNameTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
@@ -109,7 +116,7 @@ public class HelpersTest {
 
 	@Nested
 	@DisplayName("Tests the get Clone URL function")
-	class GetHeadCloneURLTest {
+	class getHeadCloneURLTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
@@ -123,7 +130,7 @@ public class HelpersTest {
 
 	@Nested
 	@DisplayName("Tests the setUpConfiguration function")
-	class SetUpConfigurationTest {
+	class setUpConfigurationTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
@@ -137,8 +144,8 @@ public class HelpersTest {
 	}
 
 	@Nested
-	@DisplayName("Tests the clean up function")
-	class UpdatePreviousBuildsTest {
+	@DisplayName("Tests the updatePreviousBuilds function")
+	class updatePreviousBuildsTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
@@ -171,7 +178,7 @@ public class HelpersTest {
 	
 	@Nested
 	@DisplayName("Tests the generate index function")
-	class GenerateIndexTest {
+	class generateIndexTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
@@ -193,7 +200,7 @@ public class HelpersTest {
 
 	@Nested
 	@DisplayName("Tests the reportAddress function")
-	class ReportAdressTest {
+	class reportAdressTest {
 		@Test
 		@DisplayName("Basic test")
 		void basicTest() {
