@@ -49,11 +49,12 @@ public class MavenRunner {
 
             InvocationResult result = invoker.execute(request);
 
-            if (result.getExitCode() == 0) {
-                return true;
-            }
-            
-            
+            final int exitCode = result.getExitCode();
+
+            logger.info("Test of build {} exited with code {}", projectId, exitCode);
+
+            return exitCode == 0;
+          
         } catch (MavenInvocationException e) {
             logger.error("Error while trying to run testes", e);
         } catch (IllegalStateException e) {
@@ -61,7 +62,6 @@ public class MavenRunner {
 
         } catch (FileNotFoundException e) {
             logger.error("Could not find report file", e);
-        } 
-        return false;
+        }
     }
 }

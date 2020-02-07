@@ -17,6 +17,7 @@ import org.group22.utilities.Helpers;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.ParseException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -73,6 +74,8 @@ public class AWSFileUploader {
             logger.error(CONNECTION_ERROR, e);
         } catch (IOException e) {
             logger.error("Failed to create HTML report", e);
+        } catch (ParseException e) {
+            logger.error("Failed to parse the build result file", e);
         }
 
         return false;
