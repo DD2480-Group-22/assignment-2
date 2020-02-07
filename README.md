@@ -39,8 +39,6 @@
 3. To view the documentation open the file `target/site/apidocs/index.html` in a web browser.
 
 
-## Statement of Contributions
-  * `...`
 
 ## Configuration
 ### Requirements
